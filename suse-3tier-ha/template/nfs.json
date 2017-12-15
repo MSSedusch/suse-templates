@@ -1,0 +1,201 @@
+,
+{
+    "type": "Microsoft.Compute/availabilitySets",
+    "name": "[parameters('nfsAVSetName')]",
+    "apiVersion": "2017-03-30",
+    "location": "[resourceGroup().location]",
+    "sku": {
+        "name": "Aligned"
+    },
+    "properties": {
+        "platformFaultDomainCount": 3,
+        "platformUpdateDomainCount": 20
+    }
+},
+{
+    "type": "Microsoft.Network/loadBalancers",
+    "name": "[parameters('nfsLoadBalancerName')]",
+    "apiVersion": "2015-06-15",
+    "location": "[resourceGroup().location]",
+    "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+    ],
+    "properties": {
+        "frontendIPConfigurations": [
+            {
+                "properties": {
+                    "subnet": {
+                        "id": "[variables('internalSubnetId')]"
+                    },
+                    "privateIPAllocationMethod": "Dynamic"
+                },
+                "name": "[variables('nfsLoadBalancerFrontend')]"
+            }
+        ],
+        "backendAddressPools": [
+            {
+                "name": "[variables('nfsBackendPool')]"
+            }
+        ],
+        "loadBalancingRules": [
+            {
+                "properties": {
+                    "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('nfsLoadBalancerName'), variables('nfsLoadBalancerFrontend'))]"
+                    },
+                    "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('nfsLoadBalancerName'), variables('nfsBackendPool'))]"
+                    },
+                    "probe": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('nfsLoadBalancerName'), variables('nfsProbePort'))]"
+                    },
+                    "protocol": "Tcp",
+                    "frontendPort": 2049,
+                    "backendPort": 2049,
+                    "enableFloatingIP": true,
+                    "idleTimeoutInMinutes": "[variables('nfsIdleTimeoutInMinutes')]"
+                },
+                "name": "[concat(variables('lbrulePrefix'), '2049T')]"
+            },
+            {
+                "properties": {
+                    "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('nfsLoadBalancerName'), variables('nfsLoadBalancerFrontend'))]"
+                    },
+                    "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('nfsLoadBalancerName'), variables('nfsBackendPool'))]"
+                    },
+                    "probe": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('nfsLoadBalancerName'), variables('nfsProbePort'))]"
+                    },
+                    "protocol": "Udp",
+                    "frontendPort": 2049,
+                    "backendPort": 2049,
+                    "enableFloatingIP": true,
+                    "idleTimeoutInMinutes": "[variables('nfsIdleTimeoutInMinutes')]"
+                },
+                "name": "[concat(variables('lbrulePrefix'), '2049U')]"
+            }
+        ],
+        "probes": [
+            {
+                "properties": {
+                    "protocol": "Tcp",
+                    "port": "[variables('nfsProbePortInternal')]",
+                    "intervalInSeconds": 5,
+                    "numberOfProbes": 2
+                },
+                "name": "[variables('nfsProbePort')]"
+            }
+        ]
+    }
+},
+{
+    "type": "Microsoft.Network/publicIPAddresses",
+    "name": "[concat(parameters('nfsPIPName'), '-', copyIndex())]",
+    "apiVersion": "2015-06-15",
+    "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+    ],
+    "location": "[resourceGroup().location]",
+    "copy": {
+        "name": "nfspipLoop",
+        "count": "[variables('nfsvmCount')]"
+    },
+    "condition": "[equals(length(parameters('subnetId')), 0)]",
+    "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+    }
+},
+{
+    "type": "Microsoft.Network/networkInterfaces",
+    "name": "[concat(parameters('nfsNICName'), '-', copyIndex())]",
+    "apiVersion": "2017-06-01",
+    "copy": {
+        "name": "nfsNICLoop",
+        "count": "[variables('nfsvmCount')]"
+    },
+    "dependsOn": [
+        "nfspipLoop",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+        "[concat('Microsoft.Network/loadBalancers/', parameters('nfsLoadBalancerName'))]"
+    ],
+    "location": "[resourceGroup().location]",
+    "properties": {
+        "ipConfigurations": [
+            {
+                "name": "ipconfig1",
+                "properties": {
+                    "privateIPAllocationMethod": "Dynamic",
+                    "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('nfsPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
+                    "subnet": {
+                        "id": "[variables('internalSubnetId')]"
+                    },
+                    "loadBalancerBackendAddressPools": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('nfsLoadBalancerName'), variables('nfsBackendPool'))]"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+},
+{
+    "type": "Microsoft.Compute/virtualMachines",
+    "name": "[concat(parameters('nfsVMName'), '-', copyIndex())]",
+    "copy": {
+        "name": "nfsVMLoop",
+        "count": "[variables('nfsvmCount')]"
+    },
+    "dependsOn": [
+        "nfsNICLoop",
+        "[concat('Microsoft.Compute/availabilitySets/', parameters('nfsAVSetName'))]"
+    ],
+    "apiVersion": "2017-03-30",
+    "location": "[resourceGroup().location]",
+    "properties": {
+        "availabilitySet": {
+            "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('nfsAVSetName'))]"
+        },
+        "hardwareProfile": {
+            "vmSize": "Standard_D2s_v3"
+        },
+        "osProfile": {
+            "computerName": "[concat(parameters('nfsVMName'), '-', copyIndex())]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+            "imageReference": {
+                "publisher": "[variables('images')[parameters('osType')].publisher]",
+                "offer": "[variables('images')[parameters('osType')].offer]",
+                "sku": "[variables('images')[parameters('osType')].sku]",
+                "version": "latest"
+            },
+            "osDisk": {
+                "name": "[concat(parameters('nfsVMName'), '-', copyIndex(), '-osdisk')]",
+                "caching": "[variables('nfsOSDiskCaching')]",
+                "createOption": "FromImage",
+                "managedDisk": {
+                    "storageAccountType": "[variables('nfsOSDiskStorageType')]"
+                }
+            },
+            "dataDisks": [
+                {
+                    "name": "[concat(parameters('nfsVMName'), '-', copyIndex(), '-sap')]",
+                    "lun": 0,
+                    "createOption": "Empty",
+                    "diskSizeGB": 32
+                }
+            ]
+        },
+        "networkProfile": {
+            "networkInterfaces": [
+                {
+                    "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('nfsNICName'), '-', copyIndex()))]"
+                }
+            ]
+        }
+    }
+}

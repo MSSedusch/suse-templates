@@ -1,0 +1,219 @@
+{
+    "type": "Microsoft.Compute/availabilitySets",
+    "name": "[parameters('hAVSetName')]",
+    "apiVersion": "2017-03-30",
+    "location": "[resourceGroup().location]",
+    "sku": {
+        "name": "Aligned"
+    },
+    "properties": {
+        "platformFaultDomainCount": 3,
+        "platformUpdateDomainCount": 20
+    }
+},
+{
+    "type": "Microsoft.Network/loadBalancers",
+    "name": "[parameters('hLoadBalancerName')]",
+    "apiVersion": "2015-06-15",
+    "location": "[resourceGroup().location]",
+    "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+    ],
+    "properties": {
+        "frontendIPConfigurations": [
+            {
+                "properties": {
+                    "subnet": {
+                        "id": "[variables('internalSubnetId')]"
+                    },
+                    "privateIPAllocationMethod": "Dynamic"
+                },
+                "name": "[variables('hLoadBalancerFrontend')]"
+            }
+        ],
+        "backendAddressPools": [
+            {
+                "name": "[variables('hBackendPool')]"
+            }
+        ],
+        "loadBalancingRules": [
+            {
+                "properties": {
+                    "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('hLoadBalancerName'), variables('hLoadBalancerFrontend'))]"
+                    },
+                    "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('hLoadBalancerName'), variables('hBackendPool'))]"
+                    },
+                    "probe": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('hLoadBalancerName'), variables('hProbePort'))]"
+                    },
+                    "protocol": "Tcp",
+                    "frontendPort": "[add(30015, mul(parameters('dbInstanceNumber'), 100))]",
+                    "backendPort": "[add(30015, mul(parameters('dbInstanceNumber'), 100))]",
+                    "enableFloatingIP": true,
+                    "idleTimeoutInMinutes": "[variables('hIdleTimeoutInMinutes')]"
+                },
+                "name": "[concat(variables('lbrulePrefix'), '3', padLeft(parameters('dbInstanceNumber'), 2, '0'), '15')]"
+            },
+            {
+                "properties": {
+                    "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('hLoadBalancerName'), variables('hLoadBalancerFrontend'))]"
+                    },
+                    "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('hLoadBalancerName'), variables('hBackendPool'))]"
+                    },
+                    "probe": {
+                        "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('hLoadBalancerName'), variables('hProbePort'))]"
+                    },
+                    "protocol": "Tcp",
+                    "frontendPort": "[add(30017, mul(parameters('dbInstanceNumber'), 100))]",
+                    "backendPort": "[add(30017, mul(parameters('dbInstanceNumber'), 100))]",
+                    "enableFloatingIP": true,
+                    "idleTimeoutInMinutes": "[variables('hIdleTimeoutInMinutes')]"
+                },
+                "name": "[concat(variables('lbrulePrefix'), '3', padLeft(parameters('dbInstanceNumber'), 2, '0'), '17')]"
+            }
+        ],
+        "probes": [
+            {
+                "properties": {
+                    "protocol": "Tcp",
+                    "port": "[variables('hProbePortInternal')]",
+                    "intervalInSeconds": 5,
+                    "numberOfProbes": 2
+                },
+                "name": "[variables('hProbePort')]"
+            }
+        ]
+    }
+},
+{
+    "type": "Microsoft.Network/publicIPAddresses",
+    "name": "[concat(parameters('hPIPName'), '-', copyIndex())]",
+    "apiVersion": "2015-06-15",
+    "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+    ],
+    "location": "[resourceGroup().location]",
+    "copy": {
+        "name": "hpipLoop",
+        "count": "[variables('hvmCount')]"
+    },
+    "condition": "[equals(length(parameters('subnetId')), 0)]",
+    "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+    }
+},
+{
+    "type": "Microsoft.Network/networkInterfaces",
+    "name": "[concat(parameters('hNICName'), '-', copyIndex())]",
+    "apiVersion": "2017-06-01",
+    "copy": {
+        "name": "hNICLoop",
+        "count": "[variables('hvmCount')]"
+    },
+    "dependsOn": [
+        "hpipLoop",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+        "[concat('Microsoft.Network/loadBalancers/', parameters('hLoadBalancerName'))]"
+    ],
+    "location": "[resourceGroup().location]",
+    "properties": {
+        "ipConfigurations": [
+            {
+                "name": "ipconfig1",
+                "properties": {
+                    "privateIPAllocationMethod": "Dynamic",
+                    "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('hPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
+                    "subnet": {
+                        "id": "[variables('internalSubnetId')]"
+                    },
+                    "loadBalancerBackendAddressPools": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('hLoadBalancerName'), variables('hBackendPool'))]"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+},
+{
+    "type": "Microsoft.Compute/virtualMachines",
+    "name": "[concat(parameters('hVMName'), '-', copyIndex())]",
+    "copy": {
+        "name": "hVMLoop",
+        "count": "[variables('hvmCount')]"
+    },
+    "dependsOn": [
+        "hNICLoop",
+        "[concat('Microsoft.Compute/availabilitySets/', parameters('hAVSetName'))]"
+    ],
+    "apiVersion": "2017-03-30",
+    "location": "[resourceGroup().location]",
+    "properties": {
+        "availabilitySet": {
+            "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('hAVSetName'))]"
+        },
+        "hardwareProfile": {
+            "vmSize": "[variables('sizes')[parameters('size')].hana.vmSize]"
+        },
+        "osProfile": {
+            "computerName": "[concat(parameters('hVMName'), '-', copyIndex())]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]",
+            "customData": "[parameters('customData')]"
+        },
+        "storageProfile": {
+            "imageReference": {
+                "publisher": "[variables('images')[parameters('osType')].publisher]",
+                "offer": "[variables('images')[parameters('osType')].offer]",
+                "sku": "[variables('images')[parameters('osType')].sku]",
+                "version": "latest"
+            },
+            "osDisk": {
+                "name": "[concat(parameters('hVMName'), '-', copyIndex(), '-osdisk')]",
+                "caching": "[variables('hOSDiskCaching')]",
+                "createOption": "FromImage",
+                "managedDisk": {
+                    "storageAccountType": "[variables('hOSDiskStorageType')]"
+                }
+            },
+            "dataDisks": "[variables('sizes')[parameters('size')].hana.disks]"
+        },
+        "networkProfile": {
+            "networkInterfaces": [
+                {
+                    "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('hNICName'), '-', copyIndex()))]"
+                }
+            ]
+        }
+    }
+},
+{
+    "type": "Microsoft.Compute/virtualMachines/extensions",
+    "name": "[concat(parameters('hVMName'), '-', copyIndex(), '/', 'CustomScript')]",
+    "apiVersion": "2015-06-15",
+    "copy": {
+        "name": "hCSELoop",
+        "count": "[variables('hvmCount')]"
+    },
+    "location": "[resourceGroup().location]",
+    "dependsOn": [
+        "hVMLoop"
+    ],
+    "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+            "fileUris": [
+                "[variables('csExtensionScript')]"
+            ],
+            "commandToExecute": "[concat('while [ ! -f /var/lib/waagent/CustomData ]; do sleep 1; done;sleep 10;cat /var/lib/waagent/CustomData | base64 --decode | sh -s -- ', variables('sizes')[parameters('size')].hana.scriptArguments)]"
+        }
+    }
+}
