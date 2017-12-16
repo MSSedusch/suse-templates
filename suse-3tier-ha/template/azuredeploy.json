@@ -275,6 +275,8 @@
                     // 442368 MB Memory
                     // data: 4 * Memory = 1769472MB; 400MB/s
                     // log:  1 * Memory = 442368 MB; 250MB/s
+                    // data 7*P15
+                    // log  4*P10
                     "disks": [
                         {
                             "lun": 0,
@@ -314,20 +316,30 @@
                         {
                             "lun": 7,
                             "createOption": "Empty",
-                            "diskSizeGB": 256
+                            "diskSizeGB": 128
                         },
                         {
                             "lun": 8,
                             "createOption": "Empty",
-                            "diskSizeGB": 256
+                            "diskSizeGB": 128
                         },
                         {
                             "lun": 9,
                             "createOption": "Empty",
                             "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 10,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 11,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
                         }
                     ],
-                    "scriptArguments": "-luns '0,1,2,3,4,5,6#7,8#9' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "scriptArguments": "-luns '0,1,2,3,4,5,6#7,8,9,10#11' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
                     "useFastNetwork": true
                 },
                 "xscs": {
@@ -356,6 +368,8 @@
                     // 1024000 MB Memory
                     // data: 4 * Memory = 4096000 MB; 400MB/s
                     // log:  1 * Memory = 1024000 MB; 250MB/s
+                    // data 2*P40
+                    // log  2*P20
                     "disks": [
                         {
                             "lun": 0,
@@ -412,6 +426,8 @@
                     // 2048000 MB Memory
                     // data: 4 * Memory = 8192000 MB; 400MB/s
                     // log:  1 * Memory = 2048000 MB; 250MB/s
+                    // data 2*P50
+                    // log  2*P30
                     "disks": [
                         {
                             "lun": 0,
@@ -426,7 +442,12 @@
                         {
                             "lun": 2,
                             "createOption": "Empty",
-                            "diskSizeGB": 2048
+                            "diskSizeGB": 1024
+                        },
+                        {
+                            "lun": 3,
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
                         },
                         {
                             "lun": 4,
@@ -434,7 +455,7 @@
                             "diskSizeGB": 128
                         }
                     ],
-                    "scriptArguments": "-luns '0,1#2#3' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "scriptArguments": "-luns '0,1#2,3#4' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
                     "useFastNetwork": true
                 },
                 "xscs": {
