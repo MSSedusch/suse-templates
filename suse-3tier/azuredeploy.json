@@ -29,18 +29,6 @@
                 "description": "The type of the operating system you want to deploy."
             }
         },
-        "stackType": {
-            "type": "string",
-            "allowedValues": [
-                "ABAP",
-                "JAVA",
-                "ABAP+JAVA"
-            ],
-            "defaultValue": "ABAP+JAVA",
-            "metadata": {
-                "description": "The type of the operating system you want to deploy."
-            }
-        },
         "adminUsername": {
             "type": "string",
             "defaultValue": "sapadmin",
@@ -104,10 +92,6 @@
         //
         // ASCS parameters
         //
-        "xscsAVSetName": {
-            "defaultValue": "sap-av",
-            "type": "string"
-        },
         "xscsPIPName": {
             "defaultValue": "sap-pip",
             "type": "string"
@@ -116,37 +100,13 @@
             "defaultValue": "sap-nic",
             "type": "string"
         },
-        "xscsLoadBalancerName": {
-            "defaultValue": "sap-lb",
-            "type": "string"
-        },
         "xscsVMName": {
             "defaultValue": "sap-vm",
             "type": "string"
         },
-        "ascsInstanceNumber": {
-            "defaultValue": 0,
-            "type": "int"
-        },
-        "ascsInstanceNumberERS": {
-            "defaultValue": 10,
-            "type": "int"
-        },
-        "scsInstanceNumber": {
-            "defaultValue": 1,
-            "type": "int"
-        },
-        "scsInstanceNumberERS": {
-            "defaultValue": 11,
-            "type": "int"
-        },
         //
         // HANA parameters
         //
-        "hAVSetName": {
-            "defaultValue": "hana-av",
-            "type": "string"
-        },
         "hPIPName": {
             "defaultValue": "hana-pip",
             "type": "string"
@@ -155,17 +115,9 @@
             "defaultValue": "hana-nic",
             "type": "string"
         },
-        "hLoadBalancerName": {
-            "defaultValue": "hana-lb",
-            "type": "string"
-        },
         "hVMName": {
             "defaultValue": "hana-vm",
             "type": "string"
-        },
-        "dbInstanceNumber": {
-            "defaultValue": 50,
-            "type": "int"
         }
     },
     "variables": {
@@ -178,7 +130,6 @@
             }
         },
         "internalSubnetId": "[variables('subnetConfigs')[string(equals(length(parameters('subnetId')), 0))].subnet]",
-        "lbrulePrefix": "lb-",
         "images": {
             "SLES for SAP 12 SP3 (Premium)": {
                 "sku": "12-SP3",
@@ -452,7 +403,6 @@
                 }
             }
         },
-        "lbIdleTimeoutInMinutes": 30,
         //
         // APP variables
         //        
