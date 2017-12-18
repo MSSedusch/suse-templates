@@ -77,10 +77,6 @@
             "defaultValue": "app-av",
             "type": "string"
         },
-        "appPIPName": {
-            "defaultValue": "app-pip",
-            "type": "string"
-        },
         "appNICName": {
             "defaultValue": "app-nic",
             "type": "string"
@@ -107,10 +103,6 @@
         //
         // HANA parameters
         //
-        "hPIPName": {
-            "defaultValue": "hana-pip",
-            "type": "string"
-        },
         "hNICName": {
             "defaultValue": "hana-nic",
             "type": "string"
@@ -609,28 +601,11 @@
         // HANA resources
         //
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[parameters('hPIPName')]",
-            "apiVersion": "2015-06-15",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
-            ],
-            "location": "[resourceGroup().location]",
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
-            "tags": {
-                "provider": "[toUpper(parameters('_SUSETags').provider)]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic"
-            }
-        },
-        {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[parameters('hNICName')]",
             "apiVersion": "2017-06-01",
             "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
-                "[concat('Microsoft.Network/publicIPAddresses/', parameters('hPIPName'))]"
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
             "location": "[resourceGroup().location]",
             "tags": {
@@ -642,7 +617,6 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', parameters('hPIPName')), '\"}')), json('null'))]",
                             "subnet": {
                                 "id": "[variables('internalSubnetId')]"
                             }
@@ -741,26 +715,6 @@
             }
         },
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[concat(parameters('appPIPName'), '-', copyIndex())]",
-            "apiVersion": "2015-06-15",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
-            ],
-            "location": "[resourceGroup().location]",
-            "copy": {
-                "name": "apppipLoop",
-                "count": "[variables('appvmCount')]"
-            },
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
-            "tags": {
-                "provider": "[toUpper(parameters('_SUSETags').provider)]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic"
-            }
-        },
-        {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('appNICName'), '-', copyIndex())]",
             "apiVersion": "2017-06-01",
@@ -769,7 +723,6 @@
                 "count": "[variables('appvmCount')]"
             },
             "dependsOn": [
-                "apppipLoop",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
             "location": "[resourceGroup().location]",
@@ -782,7 +735,6 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('appPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
                             "subnet": {
                                 "id": "[variables('internalSubnetId')]"
                             }

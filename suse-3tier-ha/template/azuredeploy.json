@@ -89,10 +89,6 @@
             "defaultValue": "app-av",
             "type": "string"
         },
-        "appPIPName": {
-            "defaultValue": "app-pip",
-            "type": "string"
-        },
         "appNICName": {
             "defaultValue": "app-nic",
             "type": "string"
@@ -147,10 +143,6 @@
             "defaultValue": "hana-av",
             "type": "string"
         },
-        "hPIPName": {
-            "defaultValue": "hana-pip",
-            "type": "string"
-        },
         "hNICName": {
             "defaultValue": "hana-nic",
             "type": "string"
@@ -172,10 +164,6 @@
         //
         "nfsAVSetName": {
             "defaultValue": "nfs-av",
-            "type": "string"
-        },
-        "nfsPIPName": {
-            "defaultValue": "nfs-pip",
             "type": "string"
         },
         "nfsNICName": {
@@ -1129,26 +1117,6 @@
             }
         },
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[concat(parameters('nfsPIPName'), '-', copyIndex())]",
-            "apiVersion": "2015-06-15",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
-            ],
-            "location": "[resourceGroup().location]",
-            "copy": {
-                "name": "nfspipLoop",
-                "count": "[variables('nfsvmCount')]"
-            },
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
-            "tags": {
-                "provider": "[toUpper(parameters('_SUSETags').provider)]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic"
-            }
-        },
-        {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('nfsNICName'), '-', copyIndex())]",
             "apiVersion": "2017-06-01",
@@ -1157,7 +1125,6 @@
                 "count": "[variables('nfsvmCount')]"
             },
             "dependsOn": [
-                "nfspipLoop",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
                 "[concat('Microsoft.Network/loadBalancers/', parameters('nfsLoadBalancerName'))]"
             ],
@@ -1171,7 +1138,6 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('nfsPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
                             "subnet": {
                                 "id": "[variables('internalSubnetId')]"
                             },
@@ -1616,26 +1582,6 @@
             }
         },
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[concat(parameters('hPIPName'), '-', copyIndex())]",
-            "apiVersion": "2015-06-15",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
-            ],
-            "location": "[resourceGroup().location]",
-            "copy": {
-                "name": "hpipLoop",
-                "count": "[variables('hvmCount')]"
-            },
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
-            "tags": {
-                "provider": "[toUpper(parameters('_SUSETags').provider)]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic"
-            }
-        },
-        {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('hNICName'), '-', copyIndex())]",
             "apiVersion": "2017-06-01",
@@ -1644,7 +1590,6 @@
                 "count": "[variables('hvmCount')]"
             },
             "dependsOn": [
-                "hpipLoop",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
                 "[concat('Microsoft.Network/loadBalancers/', parameters('hLoadBalancerName'))]"
             ],
@@ -1658,7 +1603,6 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('hPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
                             "subnet": {
                                 "id": "[variables('internalSubnetId')]"
                             },
@@ -1774,26 +1718,6 @@
             }
         },
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[concat(parameters('appPIPName'), '-', copyIndex())]",
-            "apiVersion": "2015-06-15",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
-            ],
-            "location": "[resourceGroup().location]",
-            "copy": {
-                "name": "apppipLoop",
-                "count": "[variables('appvmCount')]"
-            },
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
-            "tags": {
-                "provider": "[toUpper(parameters('_SUSETags').provider)]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic"
-            }
-        },
-        {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('appNICName'), '-', copyIndex())]",
             "apiVersion": "2017-06-01",
@@ -1802,7 +1726,6 @@
                 "count": "[variables('appvmCount')]"
             },
             "dependsOn": [
-                "apppipLoop",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
             "location": "[resourceGroup().location]",
@@ -1815,7 +1738,6 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('appPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
                             "subnet": {
                                 "id": "[variables('internalSubnetId')]"
                             }
