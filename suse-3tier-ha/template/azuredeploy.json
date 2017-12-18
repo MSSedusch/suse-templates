@@ -940,7 +940,7 @@
         //
         // HANA variables
         //        
-        "hvmCount": 1,
+        "hvmCount": 2,
         "hLoadBalancerFrontend": "frontend",
         "hBackendPool": "backend",
         "hProbePort": "probe",
