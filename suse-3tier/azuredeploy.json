@@ -1,0 +1,876 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sapSystemId": {
+            "type": "string",
+            "defaultValue": "TST"
+        },
+        "osType": {
+            "type": "string",
+            "allowedValues": [
+                "SLES for SAP 12 SP3 (Premium)"
+            ],
+            "defaultValue": "SLES for SAP 12 SP3 (Premium)",
+            "metadata": {
+                "description": "The type of the operating system you want to deploy."
+            }
+        },
+        "size": {
+            "type": "string",
+            "allowedValues": [
+                "Demo",
+                "Small",
+                "Medium",
+                "Large"
+            ],
+            "defaultValue": "Demo",
+            "metadata": {
+                "description": "The type of the operating system you want to deploy."
+            }
+        },
+        "stackType": {
+            "type": "string",
+            "allowedValues": [
+                "ABAP",
+                "JAVA",
+                "ABAP+JAVA"
+            ],
+            "defaultValue": "ABAP+JAVA",
+            "metadata": {
+                "description": "The type of the operating system you want to deploy."
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "sapadmin",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "minLength": 12,
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "subnetId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The id of the subnet you want to use."
+            }
+        },
+        "addressPrefix": {
+            "defaultValue": "10.0.0.0/16",
+            "type": "string"
+        },
+        "subnetName": {
+            "defaultValue": "subnet",
+            "type": "string"
+        },
+        "subnetPrefix": {
+            "defaultValue": "10.0.0.0/24",
+            "type": "string"
+        },
+        "nsgName": {
+            "defaultValue": "nsg",
+            "type": "string"
+        },
+        "vnetName": {
+            "defaultValue": "vnet",
+            "type": "string"
+        },
+        //
+        // APP parameters
+        //
+        "appAVSetName": {
+            "defaultValue": "app-av",
+            "type": "string"
+        },
+        "appPIPName": {
+            "defaultValue": "app-pip",
+            "type": "string"
+        },
+        "appNICName": {
+            "defaultValue": "app-nic",
+            "type": "string"
+        },
+        "appVMName": {
+            "defaultValue": "app-vm",
+            "type": "string"
+        },
+        //
+        // ASCS parameters
+        //
+        "xscsAVSetName": {
+            "defaultValue": "sap-av",
+            "type": "string"
+        },
+        "xscsPIPName": {
+            "defaultValue": "sap-pip",
+            "type": "string"
+        },
+        "xscsNICName": {
+            "defaultValue": "sap-nic",
+            "type": "string"
+        },
+        "xscsLoadBalancerName": {
+            "defaultValue": "sap-lb",
+            "type": "string"
+        },
+        "xscsVMName": {
+            "defaultValue": "sap-vm",
+            "type": "string"
+        },
+        "ascsInstanceNumber": {
+            "defaultValue": 0,
+            "type": "int"
+        },
+        "ascsInstanceNumberERS": {
+            "defaultValue": 10,
+            "type": "int"
+        },
+        "scsInstanceNumber": {
+            "defaultValue": 1,
+            "type": "int"
+        },
+        "scsInstanceNumberERS": {
+            "defaultValue": 11,
+            "type": "int"
+        },
+        //
+        // HANA parameters
+        //
+        "hAVSetName": {
+            "defaultValue": "hana-av",
+            "type": "string"
+        },
+        "hPIPName": {
+            "defaultValue": "hana-pip",
+            "type": "string"
+        },
+        "hNICName": {
+            "defaultValue": "hana-nic",
+            "type": "string"
+        },
+        "hLoadBalancerName": {
+            "defaultValue": "hana-lb",
+            "type": "string"
+        },
+        "hVMName": {
+            "defaultValue": "hana-vm",
+            "type": "string"
+        },
+        "dbInstanceNumber": {
+            "defaultValue": 50,
+            "type": "int"
+        }
+    },
+    "variables": {
+        "subnetConfigs": {
+            "true": {
+                "subnet": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+            },
+            "false": {
+                "subnet": "[parameters('subnetId')]"
+            }
+        },
+        "internalSubnetId": "[variables('subnetConfigs')[string(equals(length(parameters('subnetId')), 0))].subnet]",
+        "lbrulePrefix": "lb-",
+        "images": {
+            "SLES for SAP 12 SP3 (Premium)": {
+                "sku": "12-SP3",
+                "offer": "SLES-SAP",
+                "publisher": "SUSE",
+                "version": "latest",
+                "OSType": "Linux"
+            }
+        },
+        "sizes": {
+            "Demo": {
+                "hana": {
+                    "vmSize": "Standard_D4s_v3",
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 1,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 2,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 3,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 4,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "-luns '0,1#2,3#4' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "useFastNetwork": false
+                },
+                "xscs": {
+                    "vmSize": "Standard_D2s_v3",
+                    "disks": [],
+                    "scriptArguments": "-luns",
+                    "useFastNetwork": false
+                },
+                "apps": {
+                    "vmSize": "Standard_D2s_v3",
+                    "vmCount": 2,
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "[concat('-luns 0 -names sap -paths /usr/sap/', parameters('sapSystemId'))]",
+                    "useFastNetwork": false
+                }
+            },
+            "Small": {
+                "hana": {
+                    "vmSize": "Standard_E64s_v3",
+                    // 442368 MB Memory
+                    // data: 4 * Memory = 1769472MB; 400MB/s
+                    // log:  1 * Memory = 442368 MB; 250MB/s
+                    // data 7*P15
+                    // log  4*P10
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 256
+                        },
+                        {
+                            "lun": 1,
+                            "createOption": "Empty",
+                            "diskSizeGB": 256
+                        },
+                        {
+                            "lun": 2,
+                            "createOption": "Empty",
+                            "diskSizeGB": 256
+                        },
+                        {
+                            "lun": 3,
+                            "createOption": "Empty",
+                            "diskSizeGB": 256
+                        },
+                        {
+                            "lun": 4,
+                            "createOption": "Empty",
+                            "diskSizeGB": 256
+                        },
+                        {
+                            "lun": 5,
+                            "createOption": "Empty",
+                            "diskSizeGB": 256
+                        },
+                        {
+                            "lun": 6,
+                            "createOption": "Empty",
+                            "diskSizeGB": 256
+                        },
+                        {
+                            "lun": 7,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 8,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 9,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 10,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 11,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "-luns '0,1,2,3,4,5,6#7,8,9,10#11' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "useFastNetwork": true
+                },
+                "xscs": {
+                    "vmSize": "Standard_D2s_v3",
+                    "disks": [],
+                    "scriptArguments": "-luns",
+                    "useFastNetwork": false
+                },
+                "apps": {
+                    "vmSize": "Standard_E64s_v3",
+                    "vmCount": 6,
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "[concat('-luns 0 -names sap -paths /usr/sap/', parameters('sapSystemId'))]",
+                    "useFastNetwork": true
+                }
+            },
+            "Medium": {
+                "hana": {
+                    "vmSize": "Standard_M64s",
+                    // 1024000 MB Memory
+                    // data: 4 * Memory = 4096000 MB; 400MB/s
+                    // log:  1 * Memory = 1024000 MB; 250MB/s
+                    // data 2*P40
+                    // log  2*P20
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 2048
+                        },
+                        {
+                            "lun": 1,
+                            "createOption": "Empty",
+                            "diskSizeGB": 2048
+                        },
+                        {
+                            "lun": 2,
+                            "createOption": "Empty",
+                            "diskSizeGB": 512
+                        },
+                        {
+                            "lun": 3,
+                            "createOption": "Empty",
+                            "diskSizeGB": 512
+                        },
+                        {
+                            "lun": 4,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "-luns '0,1#2,3#4' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "useFastNetwork": true
+                },
+                "xscs": {
+                    "vmSize": "Standard_D2s_v3",
+                    "disks": [],
+                    "scriptArguments": "-luns",
+                    "useFastNetwork": false
+                },
+                "apps": {
+                    "vmSize": "Standard_E64s_v3",
+                    "vmCount": 10,
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "[concat('-luns 0 -names sap -paths /usr/sap/', parameters('sapSystemId'))]",
+                    "useFastNetwork": true
+                }
+            },
+            "Large": {
+                "hana": {
+                    "vmSize": "Standard_M128s",
+                    // 2048000 MB Memory
+                    // data: 4 * Memory = 8192000 MB; 400MB/s
+                    // log:  1 * Memory = 2048000 MB; 250MB/s
+                    // data 2*P50
+                    // log  2*P30
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 4095
+                        },
+                        {
+                            "lun": 1,
+                            "createOption": "Empty",
+                            "diskSizeGB": 4095
+                        },
+                        {
+                            "lun": 2,
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
+                        },
+                        {
+                            "lun": 3,
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
+                        },
+                        {
+                            "lun": 4,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "-luns '0,1#2,3#4' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "useFastNetwork": true
+                },
+                "xscs": {
+                    "vmSize": "Standard_D2s_v3",
+                    "disks": [],
+                    "scriptArguments": "-luns",
+                    "useFastNetwork": false
+                },
+                "apps": {
+                    "vmSize": "Standard_E64s_v3",
+                    "vmCount": 12,
+                    "disks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "scriptArguments": "[concat('-luns 0 -names sap -paths /usr/sap/', parameters('sapSystemId'))]",
+                    "useFastNetwork": true
+                }
+            }
+        },
+        "lbIdleTimeoutInMinutes": 30,
+        //
+        // APP variables
+        //        
+        "appvmCount": "[variables('sizes')[parameters('size')].apps.vmCount]",
+        "appOSDiskCaching": "ReadWrite",
+        "appOSDiskStorageType": "Premium_LRS",
+        //
+        // ASCS variables
+        //
+        "xscsOSDiskCaching": "ReadWrite",
+        "xscsOSDiskStorageType": "Premium_LRS",
+        //
+        // HANA variables
+        //
+        "hOSDiskCaching": "ReadWrite",
+        "hOSDiskStorageType": "Premium_LRS"
+    },
+    "resources": [
+        //
+        // VNET resources
+        //
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[concat(parameters('nsgName'))]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "description": "Allow SSH Subnet",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vnetName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
+            ],
+            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        //
+        // XSCS resources
+        //
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('xscsPIPName')]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('xscsNICName')]",
+            "apiVersion": "2017-06-01",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('xscsPIPName'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('xscsPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
+                            "subnet": {
+                                "id": "[variables('internalSubnetId')]"
+                            }
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[variables('sizes')[parameters('size')].xscs.useFastNetwork]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('xscsVMName')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('xscsNICName'))]"
+            ],
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('sizes')[parameters('size')].xscs.vmSize]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('xscsVMName'), '-', copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "customData": "IyEvYmluL2Jhc2gKCmZ1bmN0aW9uIGxvZygpCnsKICBtZXNzYWdlPSRACiAgZWNobyAiJG1lc3NhZ2UiCiAgZWNobyAiJG1lc3NhZ2UiID4+IC92YXIvbG9nL3NhcGNvbmZpZ2NyZWF0ZQp9Cgpsb2cgJEA="
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('images')[parameters('osType')].publisher]",
+                        "offer": "[variables('images')[parameters('osType')].offer]",
+                        "sku": "[variables('images')[parameters('osType')].sku]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(parameters('xscsVMName'), '-', copyIndex(), '-osdisk')]",
+                        "caching": "[variables('xscsOSDiskCaching')]",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('xscsOSDiskStorageType')]"
+                        }
+                    },
+                    "dataDisks": "[variables('sizes')[parameters('size')].xscs.disks]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('xscsNICName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('xscsVMName'), '/', 'CustomScript')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('xscsVMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [],
+                    "commandToExecute": "[concat('while [ ! -f /var/lib/waagent/CustomData ]; do sleep 1; done;sleep 10;cat /var/lib/waagent/CustomData | base64 --decode | sh -s -- ', variables('sizes')[parameters('size')].xscs.scriptArguments)]"
+                }
+            }
+        },
+        //
+        // HANA resources
+        //
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('hPIPName')]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('hNICName')]",
+            "apiVersion": "2017-06-01",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('hPIPName'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', parameters('hPIPName'))) ,'\"}')), json('null'))]",
+                            "subnet": {
+                                "id": "[variables('internalSubnetId')]"
+                            }
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[variables('sizes')[parameters('size')].hana.useFastNetwork]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('hVMName')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('hNICName'))]"
+            ],
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('sizes')[parameters('size')].hana.vmSize]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('hVMName'), '-', copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "customData": "IyEvYmluL2Jhc2gKCmZ1bmN0aW9uIGxvZygpCnsKICBtZXNzYWdlPSRACiAgZWNobyAiJG1lc3NhZ2UiCiAgZWNobyAiJG1lc3NhZ2UiID4+IC92YXIvbG9nL3NhcGNvbmZpZ2NyZWF0ZQp9CgpmdW5jdGlvbiBhZGR0b2ZzdGFiKCkKewogIGxvZyAiYWRkdG9mc3RhYiIKICBwYXJ0UGF0aD0kMQogIG1vdW50PSQyCiAgaWYgWyAiJG1vdW50IiA9IHRydWUgXSA7CiAgdGhlbgogICAgbG9jYWwgYmxraWQ9JCgvc2Jpbi9ibGtpZCAkcGFydFBhdGgpCiAgICAKICAgIGlmIFtbICRibGtpZCA9fiAgVVVJRD1cIiguezM2fSlcIiBdXQogICAgdGhlbgogICAgCiAgICAgIGxvZyAiQWRkaW5nIGZzdGFiIGVudHJ5IgogICAgICBsb2NhbCB1dWlkPSR7QkFTSF9SRU1BVENIWzFdfTsKICAgICAgbG9jYWwgbW91bnRDbWQ9IiIKICAgICAgbG9nICJhZGRpbmcgZnN0YWIgZW50cnkiCiAgICAgIG1vdW50Q21kPSIvZGV2L2Rpc2svYnktdXVpZC8kdXVpZCAkbW91bnRQYXRoIHhmcyAgZGVmYXVsdHMsbm9mYWlsICAwICAyIgogICAgICBlY2hvICIkbW91bnRDbWQiID4+IC9ldGMvZnN0YWIKICAgICAgJChtb3VudCAkbW91bnRQYXRoKQogICAgCiAgICBlbHNlCiAgICAgIGxvZyAibm8gVVVJRCBmb3VuZCIKICAgICAgZXhpdCAtMTsKICAgIGZpCiAgZWxzZQogICAgJChtb3VudCAkcGFydFBhdGggJG1vdW50UGF0aCkKICBmaQogIAogIGxvZyAiYWRkdG9mc3RhYiBkb25lIgp9CgpmdW5jdGlvbiBnZXRkZXZpY2VwYXRoKCkKewoKICBsb2cgImdldGRldmljZXBhdGgiCiAgZ2V0ZGV2aWNlcGF0aHJlc3VsdD0iIgogIGxvY2FsIGx1bj0kMQogIGxvY2FsIHJlYWRsaW5rT3V0cHV0PSQocmVhZGxpbmsgL2Rldi9kaXNrL2F6dXJlL3Njc2kxL2x1biRsdW4pCiAgbG9jYWwgc2NzaU91dHB1dD0kKGxzc2NzaSkKICBpZiBbWyAkcmVhZGxpbmtPdXRwdXQgPX4gKHNkW2EtekEtWl17MSwyfSkgXV07CiAgdGhlbgogICAgbG9nICJmb3VuZCBkZXZpY2UgcGF0aCB1c2luZyByZWFkbGluayIKICAgIGdldGRldmljZXBhdGhyZXN1bHQ9Ii9kZXYvJHtCQVNIX1JFTUFUQ0hbMV19IjsKICBlbGlmIFtbICRzY3NpT3V0cHV0ID1+IFxbNTowOjA6JGx1blxdW15cW10qKC9kZXYvc2RbYS16QS1aXXsxLDJ9KSBdXTsKICB0aGVuCiAgICBsb2cgImZvdW5kIGRldmljZSBwYXRoIHVzaW5nIGxzc2NzaSIKICAgIGdldGRldmljZXBhdGhyZXN1bHQ9JHtCQVNIX1JFTUFUQ0hbMV19OwogIGVsc2UKICAgIGxvZyAibHNzY3NpIG91dHB1dCBub3QgYXMgZXhwZWN0ZWQgZm9yICRsdW4iCiAgICBleGl0IC0xOwogIGZpCiAgbG9nICJnZXRkZXZpY2VwYXRoIGRvbmUiCgp9CgpmdW5jdGlvbiBjcmVhdGVsdm0oKQp7CiAgCiAgbG9nICJjcmVhdGVsdm0iCgogIGx1bnNBPSgkezEvLywvIH0pCiAgdmdOYW1lPSQyCiAgbHZOYW1lPSQzCiAgbW91bnRQYXRoPSQ0CiAgbW91bnQ9JDUKCiAgYXJyYXludW09JHsjbHVuc0FbQF19CiAgbG9nICJjb3VudCAkYXJyYXludW0iCiAgaWYgW1sgJGFycmF5bnVtIC1ndCAxIF1dCiAgdGhlbgogICAgbG9nICJjcmVhdGVsdm0gLSBjcmVhdGluZyBsdm0iCgogICAgbnVtUmFpZERldmljZXM9MAogICAgcmFpZERldmljZXM9IiIKICAgIG51bT0keyNsdW5zQVtAXX0KICAgIGxvZyAibnVtIGx1bnMgJG51bSIKICAgIAogICAgZm9yICgoaT0wOyBpPG51bTsgaSsrKSkKICAgIGRvCiAgICAgIGxvZyAidHJ5aW5nIHRvIGZpbmQgZGV2aWNlIHBhdGgiCiAgICAgIGx1bj0ke2x1bnNBWyRpXX0KICAgICAgZ2V0ZGV2aWNlcGF0aCAkbHVuCiAgICAgIGRldmljZVBhdGg9JGdldGRldmljZXBhdGhyZXN1bHQ7CiAgICAgIAogICAgICBpZiBbIC1uICIkZGV2aWNlUGF0aCIgXTsKICAgICAgdGhlbgogICAgICAgIGxvZyAiIERldmljZSBQYXRoIGlzICRkZXZpY2VQYXRoIgogICAgICAgIG51bVJhaWREZXZpY2VzPSQoKG51bVJhaWREZXZpY2VzICsgMSkpCiAgICAgICAgcmFpZERldmljZXM9IiRyYWlkRGV2aWNlcyAkZGV2aWNlUGF0aCAiCiAgICAgIGVsc2UKICAgICAgICBsb2cgIm5vIGRldmljZSBwYXRoIGZvciBMVU4gJGx1biIKICAgICAgICBleGl0IC0xOwogICAgICBmaQogICAgZG9uZQoKICAgIGxvZyAibnVtOiAkbnVtUmFpZERldmljZXMgcGF0aHM6ICckcmFpZERldmljZXMnIgogICAgJChwdmNyZWF0ZSAkcmFpZERldmljZXMpCiAgICAkKHZnY3JlYXRlICR2Z05hbWUgJHJhaWREZXZpY2VzKQogICAgJChsdmNyZWF0ZSAtLWV4dGVudHMgMTAwJUZSRUUgLS1zdHJpcGVzICRudW1SYWlkRGV2aWNlcyAtLW5hbWUgJGx2TmFtZSAkdmdOYW1lKQogICAgJChta2ZzIC10IHhmcyAvZGV2LyR2Z05hbWUvJGx2TmFtZSkKICAgICQobWtkaXIgLXAgJG1vdW50UGF0aCkKICAgIAogICAgYWRkdG9mc3RhYiAvZGV2LyR2Z05hbWUvJGx2TmFtZSAgbW91bnQKICBlbHNlCiAgICBsb2cgImNyZWF0ZWx2bSAtIGNyZWF0aW5nIHNpbmdsZSBkaXNrIgoKICAgIGx1bj0ke2x1bnNBWzBdfQogICAgZ2V0ZGV2aWNlcGF0aCAkbHVuOwogICAgZGV2aWNlUGF0aD0kZ2V0ZGV2aWNlcGF0aHJlc3VsdDsKICAgIGlmIFsgLW4gIiRkZXZpY2VQYXRoIiBdOwogICAgdGhlbgogICAgICBsb2cgIiBEZXZpY2UgUGF0aCBpcyAkZGV2aWNlUGF0aCIKICAgICAgIyBodHRwOi8vc3VwZXJ1c2VyLmNvbS9xdWVzdGlvbnMvMzMyMjUyL2NyZWF0aW5nLWFuZC1mb3JtYXRpbmctYS1wYXJ0aXRpb24tdXNpbmctYS1iYXNoLXNjcmlwdAogICAgICAkKGVjaG8gLWUgIm5cbnBcbjFcblxuXG53IiB8IGZkaXNrICRkZXZpY2VQYXRoKSA+IC9kZXYvbnVsbAogICAgICBwYXJ0UGF0aD0iJGRldmljZVBhdGgiIjEiCiAgICAgICQobWtmcyAtdCB4ZnMgJHBhcnRQYXRoKSA+IC9kZXYvbnVsbAogICAgICAkKG1rZGlyIC1wICRtb3VudFBhdGgpCgogICAgICBhZGR0b2ZzdGFiICRwYXJ0UGF0aCBtb3VudAogICAgZWxzZQogICAgICBsb2cgIm5vIGRldmljZSBwYXRoIGZvciBMVU4gJGx1biIKICAgICAgZXhpdCAtMTsKICAgIGZpCiAgZmkKCiAgbG9nICJjcmVhdGVsdm0gZG9uZSIKfQoKbG9nICRACgpsdW5zPSIiCm5hbWVzPSIiCnBhdGhzPSIiCgp3aGlsZSB0cnVlOyAKZG8KICBjYXNlICIkMSIgaW4KICAgICItbHVucyIpICBsdW5zPSQyO3NoaWZ0IDI7bG9nICJmb3VuZCBsdW5zIgogICAgOzsKICAgICItbmFtZXMiKSAgbmFtZXM9JDI7c2hpZnQgMjtsb2cgImZvdW5kIG5hbWVzIgogICAgOzsKICAgICItcGF0aHMiKSAgcGF0aHM9JDI7c2hpZnQgMjtsb2cgImZvdW5kIHBhdGhzIgogICAgOzsKICAgICopIGxvZyAidW5rbm93biBwYXJhbWV0ZXIgJDEiO3NoaWZ0IDE7CiAgICA7OwogIGVzYWMKCiAgaWYgW1sgLXogIiQxIiBdXTsKICB0aGVuIAogICAgYnJlYWs7IAogIGZpCmRvbmUKCmx1bnNTcGxpdD0oJHtsdW5zLy8jLyB9KQpuYW1lc1NwbGl0PSgke25hbWVzLy8jLyB9KQpwYXRoc1NwbGl0PSgke3BhdGhzLy8jLyB9KQoKbHVuc0NvdW50PSR7I2x1bnNTcGxpdFtAXX0KbmFtZXNDb3VudD0keyNuYW1lc1NwbGl0W0BdfQpwYXRoc0NvdW50PSR7I3BhdGhzU3BsaXRbQF19Cgpsb2cgImNvdW50ICRsdW5zQ291bnQgJG5hbWVzQ291bnQgJHBhdGhzQ291bnQiCgppZiBbWyAkbHVuc0NvdW50IC1lcSAkbmFtZXNDb3VudCAmJiAkbmFtZXNDb3VudCAtZXEgJHBhdGhzQ291bnQgXV0KdGhlbgogIGZvciAoKGlwYXJ0PTA7IGlwYXJ0PGx1bnNDb3VudDsgaXBhcnQrKykpCiAgZG8KICAgIGx1bj0ke2x1bnNTcGxpdFskaXBhcnRdfQogICAgbmFtZT0ke25hbWVzU3BsaXRbJGlwYXJ0XX0KICAgIHBhdGg9JHtwYXRoc1NwbGl0WyRpcGFydF19CgogICAgbG9nICJjcmVhdGluZyBkaXNrIHdpdGggJGx1biAkbmFtZSAkcGF0aCIKICAgIGNyZWF0ZWx2bSAkbHVuICJ2Zy0kbmFtZSIgImx2LSRuYW1lIiAiJHBhdGgiOwogIGRvbmUKZWxzZQogIGxvZyAiY291bnQgbm90IGVxdWFsIgpmaQoKZXhpdA=="
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('images')[parameters('osType')].publisher]",
+                        "offer": "[variables('images')[parameters('osType')].offer]",
+                        "sku": "[variables('images')[parameters('osType')].sku]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(parameters('hVMName'), '-', copyIndex(), '-osdisk')]",
+                        "caching": "[variables('hOSDiskCaching')]",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('hOSDiskStorageType')]"
+                        }
+                    },
+                    "dataDisks": "[variables('sizes')[parameters('size')].hana.disks]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('hNICName'), '-', copyIndex()))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('hVMName'), '/', 'CustomScript')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('hVMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [],
+                    "commandToExecute": "[concat('while [ ! -f /var/lib/waagent/CustomData ]; do sleep 1; done;sleep 10;cat /var/lib/waagent/CustomData | base64 --decode | sh -s -- ', variables('sizes')[parameters('size')].hana.scriptArguments)]"
+                }
+            }
+        },
+        //
+        // APP resources
+        //
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('appAVSetName')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Aligned"
+            },
+            "properties": {
+                "platformFaultDomainCount": 3,
+                "platformUpdateDomainCount": 20
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[concat(parameters('appPIPName'), '-', copyIndex())]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "apppipLoop",
+                "count": "[variables('appvmCount')]"
+            },
+            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(parameters('appNICName'), '-', copyIndex())]",
+            "apiVersion": "2017-06-01",
+            "copy": {
+                "name": "appNICLoop",
+                "count": "[variables('appvmCount')]"
+            },
+            "dependsOn": [
+                "apppipLoop",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('appPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
+                            "subnet": {
+                                "id": "[variables('internalSubnetId')]"
+                            }
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[variables('sizes')[parameters('size')].apps.useFastNetwork]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('appVMName'), '-', copyIndex())]",
+            "copy": {
+                "name": "appVMLoop",
+                "count": "[variables('appvmCount')]"
+            },
+            "dependsOn": [
+                "appNICLoop",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('appAVSetName'))]"
+            ],
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('appAVSetName'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[variables('sizes')[parameters('size')].apps.vmSize]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('appVMName'), '-', copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "customData": "IyEvYmluL2Jhc2gKCmZ1bmN0aW9uIGxvZygpCnsKICBtZXNzYWdlPSRACiAgZWNobyAiJG1lc3NhZ2UiCiAgZWNobyAiJG1lc3NhZ2UiID4+IC92YXIvbG9nL3NhcGNvbmZpZ2NyZWF0ZQp9Cgpsb2cgJEA="
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('images')[parameters('osType')].publisher]",
+                        "offer": "[variables('images')[parameters('osType')].offer]",
+                        "sku": "[variables('images')[parameters('osType')].sku]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(parameters('appVMName'), '-', copyIndex(), '-osdisk')]",
+                        "caching": "[variables('appOSDiskCaching')]",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('appOSDiskStorageType')]"
+                        }
+                    },
+                    "dataDisks": "[variables('sizes')[parameters('size')].apps.disks]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('appNICName'), '-', copyIndex()))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('appVMName'), '-', copyIndex(), '/', 'CustomScript')]",
+            "apiVersion": "2015-06-15",
+            "copy": {
+                "name": "appCSELoop",
+                "count": "[variables('appvmCount')]"
+            },
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "appVMLoop"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [],
+                    "commandToExecute": "[concat('while [ ! -f /var/lib/waagent/CustomData ]; do sleep 1; done;sleep 10;cat /var/lib/waagent/CustomData | base64 --decode | sh -s -- ', variables('sizes')[parameters('size')].apps.scriptArguments)]"
+                }
+            }
+        }
+    ]
+}
