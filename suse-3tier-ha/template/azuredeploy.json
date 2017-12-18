@@ -193,6 +193,12 @@
         "nfsVirtualHostname": {
             "defaultValue": "sap-nfs",
             "type": "string"
+        },
+        "_SUSETags": {
+            "type": "object",
+            "defaultValue": {
+                "provider": "b0d27bab-bf43-4cad-9bf5-40a8041d59b8"
+            }
         }
     },
     "variables": {
@@ -969,6 +975,9 @@
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "securityRules": [
                     {
@@ -997,6 +1006,9 @@
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
             ],
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -1027,6 +1039,9 @@
             "sku": {
                 "name": "Aligned"
             },
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "platformFaultDomainCount": 3,
                 "platformUpdateDomainCount": 20
@@ -1040,6 +1055,9 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "frontendIPConfigurations": [
                     {
@@ -1123,6 +1141,9 @@
                 "count": "[variables('nfsvmCount')]"
             },
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
@@ -1141,6 +1162,9 @@
                 "[concat('Microsoft.Network/loadBalancers/', parameters('nfsLoadBalancerName'))]"
             ],
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -1175,6 +1199,9 @@
             ],
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "availabilitySet": {
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('nfsAVSetName'))]"
@@ -1229,6 +1256,9 @@
             "dependsOn": [
                 "nfsVMLoop"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
@@ -1248,6 +1278,9 @@
                 "nfsVMLoop",
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('nfsVMName'), '-0/extensions/CustomScript')]"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
@@ -1269,6 +1302,9 @@
             "sku": {
                 "name": "Aligned"
             },
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "platformFaultDomainCount": 3,
                 "platformUpdateDomainCount": 20
@@ -1282,6 +1318,9 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "frontendIPConfigurations": [
                     {
@@ -1347,6 +1386,9 @@
                 "count": "[variables('xscsvmCount')]"
             },
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
@@ -1365,6 +1407,9 @@
                 "[concat('Microsoft.Network/loadBalancers/', parameters('xscsLoadBalancerName'))]"
             ],
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -1402,6 +1447,9 @@
             ],
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "availabilitySet": {
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('xscsAVSetName'))]"
@@ -1453,6 +1501,9 @@
             "dependsOn": [
                 "xscsVMLoop"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
@@ -1475,6 +1526,9 @@
             "sku": {
                 "name": "Aligned"
             },
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "platformFaultDomainCount": 3,
                 "platformUpdateDomainCount": 20
@@ -1488,6 +1542,9 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "frontendIPConfigurations": [
                     {
@@ -1571,6 +1628,9 @@
                 "count": "[variables('hvmCount')]"
             },
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
@@ -1589,6 +1649,9 @@
                 "[concat('Microsoft.Network/loadBalancers/', parameters('hLoadBalancerName'))]"
             ],
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -1623,6 +1686,9 @@
             ],
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "availabilitySet": {
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('hAVSetName'))]"
@@ -1674,6 +1740,9 @@
             "dependsOn": [
                 "hVMLoop"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
@@ -1696,6 +1765,9 @@
             "sku": {
                 "name": "Aligned"
             },
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "platformFaultDomainCount": 3,
                 "platformUpdateDomainCount": 20
@@ -1714,6 +1786,9 @@
                 "count": "[variables('appvmCount')]"
             },
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
@@ -1731,6 +1806,9 @@
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -1760,6 +1838,9 @@
             ],
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "availabilitySet": {
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('appAVSetName'))]"
@@ -1811,6 +1892,9 @@
             "dependsOn": [
                 "appVMLoop"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",

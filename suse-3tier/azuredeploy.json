@@ -118,6 +118,12 @@
         "hVMName": {
             "defaultValue": "hana-vm",
             "type": "string"
+        },
+        "_SUSETags": {
+            "type": "object",
+            "defaultValue": {
+                "provider": "b0d27bab-bf43-4cad-9bf5-40a8041d59b8"
+            }
         }
     },
     "variables": {
@@ -430,6 +436,9 @@
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "securityRules": [
                     {
@@ -458,6 +467,9 @@
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
             ],
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -489,6 +501,9 @@
             ],
             "location": "[resourceGroup().location]",
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
@@ -502,6 +517,9 @@
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('xscsPIPName'))]"
             ],
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -526,6 +544,9 @@
             ],
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[variables('sizes')[parameters('size')].xscs.vmSize]"
@@ -570,6 +591,9 @@
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('xscsVMName'))]"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
@@ -593,6 +617,9 @@
             ],
             "location": "[resourceGroup().location]",
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
@@ -606,6 +633,9 @@
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('hPIPName'))]"
             ],
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -630,6 +660,9 @@
             ],
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[variables('sizes')[parameters('size')].hana.vmSize]"
@@ -674,6 +707,9 @@
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('hVMName'))]"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
@@ -696,6 +732,9 @@
             "sku": {
                 "name": "Aligned"
             },
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "platformFaultDomainCount": 3,
                 "platformUpdateDomainCount": 20
@@ -714,6 +753,9 @@
                 "count": "[variables('appvmCount')]"
             },
             "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
@@ -731,6 +773,9 @@
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -760,6 +805,9 @@
             ],
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "availabilitySet": {
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('appAVSetName'))]"
@@ -811,6 +859,9 @@
             "dependsOn": [
                 "appVMLoop"
             ],
+            "tags": {
+                "provider": "[toUpper(parameters('_SUSETags').provider)]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
