@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "location": {
+            "type": "string"
+        },
         "sapSystemId": {
             "type": "string",
             "defaultValue": "TST"
@@ -975,7 +978,7 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[concat(parameters('nsgName'))]",
             "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "condition": "[equals(length(parameters('subnetId')), 0)]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
@@ -1003,7 +1006,7 @@
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vnetName')]",
             "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
             ],
@@ -1037,7 +1040,7 @@
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('nfsAVSetName')]",
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "Aligned"
             },
@@ -1053,7 +1056,7 @@
             "type": "Microsoft.Network/loadBalancers",
             "name": "[parameters('nfsLoadBalancerName')]",
             "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
@@ -1142,7 +1145,7 @@
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
                 "[concat('Microsoft.Network/loadBalancers/', parameters('nfsLoadBalancerName'))]"
             ],
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1178,7 +1181,7 @@
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('nfsAVSetName'))]"
             ],
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1238,7 +1241,7 @@
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('nfsVMName'), '-0', '/', 'CustomScript')]",
             "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "nfsVMLoop"
             ],
@@ -1259,7 +1262,7 @@
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('nfsVMName'), '-1', '/', 'CustomScript')]",
             "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "nfsVMLoop",
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('nfsVMName'), '-0/extensions/CustomScript')]"
@@ -1284,7 +1287,7 @@
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('xscsAVSetName')]",
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "Aligned"
             },
@@ -1300,7 +1303,7 @@
             "type": "Microsoft.Network/loadBalancers",
             "name": "[parameters('xscsLoadBalancerName')]",
             "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
@@ -1366,7 +1369,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "copy": {
                 "name": "xscspipLoop",
                 "count": "[variables('xscsvmCount')]"
@@ -1392,7 +1395,7 @@
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
                 "[concat('Microsoft.Network/loadBalancers/', parameters('xscsLoadBalancerName'))]"
             ],
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1432,7 +1435,7 @@
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('xscsAVSetName'))]"
             ],
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1489,7 +1492,7 @@
                 "name": "xscsCSELoop",
                 "count": "[variables('xscsvmCount')]"
             },
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "xscsVMLoop"
             ],
@@ -1514,7 +1517,7 @@
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('hAVSetName')]",
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "Aligned"
             },
@@ -1530,7 +1533,7 @@
             "type": "Microsoft.Network/loadBalancers",
             "name": "[parameters('hLoadBalancerName')]",
             "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
@@ -1619,7 +1622,7 @@
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
                 "[concat('Microsoft.Network/loadBalancers/', parameters('hLoadBalancerName'))]"
             ],
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1655,7 +1658,7 @@
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('hAVSetName'))]"
             ],
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1712,7 +1715,7 @@
                 "name": "hCSELoop",
                 "count": "[variables('hvmCount')]"
             },
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "hVMLoop"
             ],
@@ -1737,7 +1740,7 @@
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('appAVSetName')]",
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "Aligned"
             },
@@ -1760,7 +1763,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1791,7 +1794,7 @@
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('appAVSetName'))]"
             ],
             "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1848,7 +1851,7 @@
                 "name": "appCSELoop",
                 "count": "[variables('appvmCount')]"
             },
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "appVMLoop"
             ],
