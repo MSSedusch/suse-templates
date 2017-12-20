@@ -62,12 +62,13 @@
             "type": "string",
             "defaultValue": ""
         },
-        "subnetId": {
-            "type": "string",
+        "createVNET": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "vnetResourceGroup": {
             "defaultValue": "",
-            "metadata": {
-                "description": "The id of the subnet you want to use."
-            }
+            "type": "string"
         },
         "addressPrefix": {
             "defaultValue": "10.0.0.0/16",
@@ -212,10 +213,10 @@
                 "subnet": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
             },
             "false": {
-                "subnet": "[parameters('subnetId')]"
+                "subnet": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
             }
         },
-        "internalSubnetId": "[variables('subnetConfigs')[string(equals(length(parameters('subnetId')), 0))].subnet]",
+        "internalSubnetId": "[variables('subnetConfigs')[string(parameters('createVNET'))].subnet]",
         "lbrulePrefix": "lb-",
         "images": {
             "SLES for SAP 12 SP3 (Premium)": {
@@ -979,7 +980,7 @@
             "name": "[concat(parameters('nsgName'))]",
             "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "condition": "[parameters('createVNET')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1010,7 +1011,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
             ],
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "condition": "[parameters('createVNET')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1374,7 +1375,7 @@
                 "name": "xscspipLoop",
                 "count": "[variables('xscsvmCount')]"
             },
-            "condition": "[equals(length(parameters('subnetId')), 0)]",
+            "condition": "[parameters('createVNET')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
@@ -1405,7 +1406,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(equals(length(parameters('subnetId')), 0), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('xscsPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
+                            "publicIPAddress": "[if(parameters('createVNET'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('xscsPIPName'), '-', copyIndex())) ,'\"}')), json('null'))]",
                             "subnet": {
                                 "id": "[variables('internalSubnetId')]"
                             },
