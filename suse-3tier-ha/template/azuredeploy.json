@@ -90,9 +90,6 @@
             "defaultValue": "vnet",
             "type": "string"
         },
-        //
-        // APP parameters
-        //
         "appAVSetName": {
             "defaultValue": "app-av",
             "type": "string"
@@ -105,9 +102,6 @@
             "defaultValue": "app-vm",
             "type": "string"
         },
-        //
-        // ASCS parameters
-        //
         "xscsAVSetName": {
             "defaultValue": "sap-av",
             "type": "string"
@@ -144,9 +138,6 @@
             "defaultValue": 11,
             "type": "int"
         },
-        //
-        // HANA parameters
-        //
         "hAVSetName": {
             "defaultValue": "hana-av",
             "type": "string"
@@ -167,9 +158,6 @@
             "defaultValue": 50,
             "type": "int"
         },
-        //
-        // NFS parameters
-        //
         "nfsAVSetName": {
             "defaultValue": "nfs-av",
             "type": "string"
@@ -230,7 +218,7 @@
         "sizes": {
             "Demo": {
                 "hana": {
-                    "vmSize": "Standard_D4s_v3",
+                    "vmSize": "Standard_E4s_v3",
                     "disks": [
                         {
                             "lun": 0,
@@ -284,11 +272,6 @@
             "Small": {
                 "hana": {
                     "vmSize": "Standard_E64s_v3",
-                    // 442368 MB Memory
-                    // data: 4 * Memory = 1769472MB; 400MB/s
-                    // log:  1 * Memory = 442368 MB; 250MB/s
-                    // data 7*P15
-                    // log  4*P10
                     "disks": [
                         {
                             "lun": 0,
@@ -377,11 +360,6 @@
             "Medium": {
                 "hana": {
                     "vmSize": "Standard_M64s",
-                    // 1024000 MB Memory
-                    // data: 4 * Memory = 4096000 MB; 400MB/s
-                    // log:  1 * Memory = 1024000 MB; 250MB/s
-                    // data 2*P40
-                    // log  2*P20
                     "disks": [
                         {
                             "lun": 0,
@@ -435,11 +413,6 @@
             "Large": {
                 "hana": {
                     "vmSize": "Standard_M128s",
-                    // 2048000 MB Memory
-                    // data: 4 * Memory = 8192000 MB; 400MB/s
-                    // log:  1 * Memory = 2048000 MB; 250MB/s
-                    // data 2*P50
-                    // log  2*P30
                     "disks": [
                         {
                             "lun": 0,
@@ -492,15 +465,9 @@
             }
         },
         "lbIdleTimeoutInMinutes": 30,
-        //
-        // APP variables
-        //        
         "appvmCount": "[variables('sizes')[parameters('size')].apps.vmCount]",
         "appOSDiskCaching": "ReadWrite",
         "appOSDiskStorageType": "Premium_LRS",
-        //
-        // ASCS variables
-        //        
         "ersLoadBalancerFrontend": "ersfrontend",
         "ersBackendPool": "ersbackend",
         "ersProbePort": "ersprobe",
@@ -949,9 +916,6 @@
             "ABAP+JAVA": "[concat(variables('ascsLoadBalancingRules'), variables('scsLoadBalancingRules'))]"
         },
         "xscsERSLoadBalancingRules": "[concat(variables('xscsLoadBalancingRules')[parameters('stackType')], variables('loadBalancingRulesERS')[parameters('stackType')])]",
-        //
-        // HANA variables
-        //        
         "hvmCount": 2,
         "hLoadBalancerFrontend": "frontend",
         "hBackendPool": "backend",
@@ -959,9 +923,6 @@
         "hProbePortInternal": "[add(62500, parameters('dbInstanceNumber'))]",
         "hOSDiskCaching": "ReadWrite",
         "hOSDiskStorageType": "Premium_LRS",
-        //
-        // NFS variables
-        //
         "nfsvmCount": 2,
         "nfsLoadBalancerFrontend": "frontend",
         "nfsBackendPool": "backend",
@@ -972,9 +933,6 @@
         "nfsScriptArguments": " -luns -node -lbip -lbname -ipnode0 -ipnode1"
     },
     "resources": [
-        //
-        // VNET resources
-        //
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[concat(parameters('nsgName'))]",
@@ -1034,9 +992,6 @@
                 ]
             }
         },
-        //
-        // NFS resources
-        //
         {
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('nfsAVSetName')]",
@@ -1281,9 +1236,6 @@
                 }
             }
         },
-        //
-        // XSCS resources
-        //
         {
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('xscsAVSetName')]",
@@ -1511,9 +1463,6 @@
                 }
             }
         },
-        //
-        // HANA resources
-        //
         {
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('hAVSetName')]",
@@ -1734,9 +1683,6 @@
                 }
             }
         },
-        //
-        // APP resources
-        //
         {
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('appAVSetName')]",

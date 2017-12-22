@@ -78,9 +78,6 @@
             "defaultValue": "vnet",
             "type": "string"
         },
-        //
-        // APP parameters
-        //
         "appAVSetName": {
             "defaultValue": "app-av",
             "type": "string"
@@ -93,9 +90,6 @@
             "defaultValue": "app-vm",
             "type": "string"
         },
-        //
-        // ASCS parameters
-        //
         "xscsPIPName": {
             "defaultValue": "sap-pip",
             "type": "string"
@@ -108,9 +102,6 @@
             "defaultValue": "sap-vm",
             "type": "string"
         },
-        //
-        // HANA parameters
-        //
         "hNICName": {
             "defaultValue": "hana-nic",
             "type": "string"
@@ -158,7 +149,7 @@
         "sizes": {
             "Demo": {
                 "hana": {
-                    "vmSize": "Standard_D4s_v3",
+                    "vmSize": "Standard_E4s_v3",
                     "disks": [
                         {
                             "lun": 0,
@@ -212,11 +203,6 @@
             "Small": {
                 "hana": {
                     "vmSize": "Standard_E64s_v3",
-                    // 442368 MB Memory
-                    // data: 4 * Memory = 1769472MB; 400MB/s
-                    // log:  1 * Memory = 442368 MB; 250MB/s
-                    // data 7*P15
-                    // log  4*P10
                     "disks": [
                         {
                             "lun": 0,
@@ -305,11 +291,6 @@
             "Medium": {
                 "hana": {
                     "vmSize": "Standard_M64s",
-                    // 1024000 MB Memory
-                    // data: 4 * Memory = 4096000 MB; 400MB/s
-                    // log:  1 * Memory = 1024000 MB; 250MB/s
-                    // data 2*P40
-                    // log  2*P20
                     "disks": [
                         {
                             "lun": 0,
@@ -363,11 +344,6 @@
             "Large": {
                 "hana": {
                     "vmSize": "Standard_M128s",
-                    // 2048000 MB Memory
-                    // data: 4 * Memory = 8192000 MB; 400MB/s
-                    // log:  1 * Memory = 2048000 MB; 250MB/s
-                    // data 2*P50
-                    // log  2*P30
                     "disks": [
                         {
                             "lun": 0,
@@ -419,27 +395,15 @@
                 }
             }
         },
-        //
-        // APP variables
-        //        
         "appvmCount": "[variables('sizes')[parameters('size')].apps.vmCount]",
         "appOSDiskCaching": "ReadWrite",
         "appOSDiskStorageType": "Premium_LRS",
-        //
-        // ASCS variables
-        //
         "xscsOSDiskCaching": "ReadWrite",
         "xscsOSDiskStorageType": "Premium_LRS",
-        //
-        // HANA variables
-        //
         "hOSDiskCaching": "ReadWrite",
         "hOSDiskStorageType": "Premium_LRS"
     },
     "resources": [
-        //
-        // VNET resources
-        //
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[concat(parameters('nsgName'))]",
@@ -499,9 +463,6 @@
                 ]
             }
         },
-        //
-        // XSCS resources
-        //
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[parameters('xscsPIPName')]",
@@ -621,9 +582,6 @@
                 }
             }
         },
-        //
-        // HANA resources
-        //
         {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[parameters('hNICName')]",
@@ -725,9 +683,6 @@
                 }
             }
         },
-        //
-        // APP resources
-        //
         {
             "type": "Microsoft.Compute/availabilitySets",
             "name": "[parameters('appAVSetName')]",
