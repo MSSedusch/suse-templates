@@ -222,12 +222,12 @@
                     "disks": [
                         {
                             "lun": 0,
-                            "createOption": "Empty",
+                            "caching": "ReadOnly",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 1,
-                            "createOption": "Empty",
+                            "caching": "ReadOnly",
                             "diskSizeGB": 128
                         },
                         {
@@ -242,22 +242,22 @@
                         },
                         {
                             "lun": 4,
-                            "createOption": "Empty",
+                            "caching": "ReadOnly",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 5,
-                            "createOption": "Empty",
+                            "caching": "ReadOnly",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 6,
-                            "createOption": "Empty",
+                            "caching": "ReadOnly",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 7,
-                            "createOption": "Empty",
+                            "caching": "ReadOnly",
                             "diskSizeGB": 128
                         }
                     ],
@@ -290,25 +290,25 @@
                     "disks": [
                         {
                             "lun": 0,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 256
                         },
                         {
                             "lun": 1,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 256
                         },
                         {
                             "lun": 2,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 256
                         },
                         {
                             "lun": 3,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 256
                         },
@@ -326,25 +326,25 @@
                         },
                         {
                             "lun": 6,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
                         {
                             "lun": 7,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 64
                         },
                         {
                             "lun": 8,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 512
                         },
                         {
                             "lun": 9,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 512
                         }
@@ -378,13 +378,13 @@
                     "disks": [
                         {
                             "lun": 0,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
                         {
                             "lun": 1,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
@@ -404,25 +404,25 @@
                         },
                         {
                             "lun": 4,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
                         {
                             "lun": 5,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 64
                         },
                         {
                             "lun": 6,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
                         {
                             "lun": 7,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         }
@@ -456,19 +456,19 @@
                     "disks": [
                         {
                             "lun": 0,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
                         {
                             "lun": 1,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
                         {
                             "lun": 2,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },                        
@@ -488,25 +488,25 @@
                         },
                         {
                             "lun": 5,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
                         },
                         {
                             "lun": 6,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 64
                         },
                         {
                             "lun": 7,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 2048
                         },
                         {
                             "lun": 8,
-                            "caching": "Read",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 2048
                         }
@@ -1240,7 +1240,7 @@
                 "nfsNICLoop",
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('nfsAVSetName'))]"
             ],
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
@@ -1491,7 +1491,7 @@
                 "xscsNICLoop",
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('xscsAVSetName'))]"
             ],
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
@@ -1711,7 +1711,7 @@
                 "hNICLoop",
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('hAVSetName'))]"
             ],
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
@@ -1845,7 +1845,7 @@
                 "appNICLoop",
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('appAVSetName'))]"
             ],
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
