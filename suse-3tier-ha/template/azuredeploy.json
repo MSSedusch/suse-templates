@@ -380,39 +380,39 @@
                             "lun": 0,
                             "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 1024
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 1,
                             "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 1024
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 2,
-                            "caching": "None",
-                            "writeAcceleratorEnabled": "true",
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 512
                         },
                         {
                             "lun": 3,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 512
+                        },
+                        {
+                            "lun": 4,
                             "caching": "None",
                             "writeAcceleratorEnabled": "true",
                             "createOption": "Empty",
                             "diskSizeGB": 512
                         },
                         {
-                            "lun": 4,
-                            "caching": "ReadOnly",
-                            "createOption": "Empty",
-                            "diskSizeGB": 1024
-                        },
-                        {
                             "lun": 5,
-                            "caching": "ReadOnly",
+                            "caching": "None",
+                            "writeAcceleratorEnabled": "true",
                             "createOption": "Empty",
-                            "diskSizeGB": 64
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 6,
@@ -424,10 +424,22 @@
                             "lun": 7,
                             "caching": "ReadOnly",
                             "createOption": "Empty",
+                            "diskSizeGB": 64
+                        },
+                        {
+                            "lun": 8,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
+                        },
+                        {
+                            "lun": 9,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
                             "diskSizeGB": 1024
                         }
                     ],
-                    "scriptArguments": "-luns '0,1#2,3#4#5#6,7' -names 'data#log#shared#usrsap#backup' -paths '/hana/data#/hana/log#/hana/shared#/usr/sap#/hana/backup'",
+                    "scriptArguments": "-luns '0,1,2,3#4,5#6#7#8,9' -names 'data#log#shared#usrsap#backup' -paths '/hana/data#/hana/log#/hana/shared#/usr/sap#/hana/backup'",
                     "useFastNetwork": true
                 },
                 "xscs": {
