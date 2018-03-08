@@ -360,7 +360,7 @@
                 },
                 "apps": {
                     "vmSize": "Standard_E64s_v3",
-                    "vmCount": 6,
+                    "vmCount": 5,
                     "disks": [
                         {
                             "lun": 0,
@@ -450,7 +450,7 @@
                 },
                 "apps": {
                     "vmSize": "Standard_E64s_v3",
-                    "vmCount": 10,
+                    "vmCount": 5,
                     "disks": [
                         {
                             "lun": 0,
@@ -534,7 +534,7 @@
                 },
                 "apps": {
                     "vmSize": "Standard_E64s_v3",
-                    "vmCount": 12,
+                    "vmCount": 10,
                     "disks": [
                         {
                             "lun": 0,
