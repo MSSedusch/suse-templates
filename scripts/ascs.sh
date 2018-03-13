@@ -7,4 +7,6 @@ function log()
   echo "$message" >> /var/log/sapconfigcreate
 }
 
-log $@
+log "installing packages"
+zypper update -y
+zypper install -y -l sle-ha-release fence-agents

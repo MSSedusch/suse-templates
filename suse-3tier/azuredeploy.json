@@ -153,31 +153,54 @@
                     "disks": [
                         {
                             "lun": 0,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 1,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 2,
+                            "caching": "None",
                             "createOption": "Empty",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 3,
+                            "caching": "None",
                             "createOption": "Empty",
                             "diskSizeGB": 128
                         },
                         {
                             "lun": 4,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 5,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 6,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 7,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 128
                         }
                     ],
-                    "scriptArguments": "-luns '0,1#2,3#4' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "scriptArguments": "-luns '0,1#2,3#4#5#6,7' -names 'data#log#shared#usrsap#backup' -paths '/hana/data#/hana/log#/hana/shared#/usr/sap#/hana/backup'  -sizes '100#100#100#100#100'",
                     "useFastNetwork": false
                 },
                 "xscs": {
@@ -206,66 +229,42 @@
                     "disks": [
                         {
                             "lun": 0,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 256
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 1,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 256
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 2,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 256
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 3,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 256
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 4,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 256
+                            "diskSizeGB": 64
                         },
                         {
                             "lun": 5,
+                            "caching": "None",
                             "createOption": "Empty",
-                            "diskSizeGB": 256
-                        },
-                        {
-                            "lun": 6,
-                            "createOption": "Empty",
-                            "diskSizeGB": 256
-                        },
-                        {
-                            "lun": 7,
-                            "createOption": "Empty",
-                            "diskSizeGB": 128
-                        },
-                        {
-                            "lun": 8,
-                            "createOption": "Empty",
-                            "diskSizeGB": 128
-                        },
-                        {
-                            "lun": 9,
-                            "createOption": "Empty",
-                            "diskSizeGB": 128
-                        },
-                        {
-                            "lun": 10,
-                            "createOption": "Empty",
-                            "diskSizeGB": 128
-                        },
-                        {
-                            "lun": 11,
-                            "createOption": "Empty",
-                            "diskSizeGB": 128
+                            "diskSizeGB": 1024
                         }
                     ],
-                    "scriptArguments": "-luns '0,1,2,3,4,5,6#7,8,9,10#11' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "scriptArguments": "-luns '0,1,2#3#4#5' -names 'datalog#shared#usrsap#backup' -paths '/hana/data,/hana/log#/hana/shared#/usr/sap#/hana/backup' -sizes '70,100#100#100#100'",
                     "useFastNetwork": true
                 },
                 "xscs": {
@@ -276,7 +275,7 @@
                 },
                 "apps": {
                     "vmSize": "Standard_E64s_v3",
-                    "vmCount": 6,
+                    "vmCount": 5,
                     "disks": [
                         {
                             "lun": 0,
@@ -294,31 +293,68 @@
                     "disks": [
                         {
                             "lun": 0,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 2048
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 1,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 2048
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 2,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 512
                         },
                         {
                             "lun": 3,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 512
                         },
                         {
                             "lun": 4,
+                            "caching": "None",
+                            "writeAcceleratorEnabled": "true",
                             "createOption": "Empty",
-                            "diskSizeGB": 128
+                            "diskSizeGB": 512
+                        },
+                        {
+                            "lun": 5,
+                            "caching": "None",
+                            "writeAcceleratorEnabled": "true",
+                            "createOption": "Empty",
+                            "diskSizeGB": 512
+                        },
+                        {
+                            "lun": 6,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
+                        },
+                        {
+                            "lun": 7,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 64
+                        },
+                        {
+                            "lun": 8,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
+                        },
+                        {
+                            "lun": 9,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
                         }
                     ],
-                    "scriptArguments": "-luns '0,1#2,3#4' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "scriptArguments": "-luns '0,1,2,3#4,5#6#7#8,9' -names 'data#log#shared#usrsap#backup' -paths '/hana/data#/hana/log#/hana/shared#/usr/sap#/hana/backup' -sizes '100#100#100#100#100'",
                     "useFastNetwork": true
                 },
                 "xscs": {
@@ -329,7 +365,7 @@
                 },
                 "apps": {
                     "vmSize": "Standard_E64s_v3",
-                    "vmCount": 10,
+                    "vmCount": 5,
                     "disks": [
                         {
                             "lun": 0,
@@ -347,31 +383,62 @@
                     "disks": [
                         {
                             "lun": 0,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 4095
+                            "diskSizeGB": 1024
                         },
                         {
                             "lun": 1,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
-                            "diskSizeGB": 4095
+                            "diskSizeGB": 1024
                         },
                         {
                             "lun": 2,
+                            "caching": "ReadOnly",
                             "createOption": "Empty",
                             "diskSizeGB": 1024
-                        },
+                        },                        
                         {
                             "lun": 3,
+                            "caching": "None",
+                            "writeAcceleratorEnabled": "true",
                             "createOption": "Empty",
-                            "diskSizeGB": 1024
+                            "diskSizeGB": 512
                         },
                         {
                             "lun": 4,
+                            "caching": "None",
+                            "writeAcceleratorEnabled": "true",  
                             "createOption": "Empty",
-                            "diskSizeGB": 128
+                            "diskSizeGB": 512
+                        },
+                        {
+                            "lun": 5,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 1024
+                        },
+                        {
+                            "lun": 6,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 64
+                        },
+                        {
+                            "lun": 7,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 2048
+                        },
+                        {
+                            "lun": 8,
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 2048
                         }
                     ],
-                    "scriptArguments": "-luns '0,1#2,3#4' -names 'data#log#shared' -paths '/hana/data#/hana/log#/hana/shared'",
+                    "scriptArguments": "-luns '0,1,2#3,4#5#6#7,8' -names 'data#log#shared#usrsap#backup' -paths '/hana/data#/hana/log#/hana/shared#/usr/sap#/hana/backup' -sizes '100#100#100#100#100'",
                     "useFastNetwork": true
                 },
                 "xscs": {
@@ -382,7 +449,7 @@
                 },
                 "apps": {
                     "vmSize": "Standard_E64s_v3",
-                    "vmCount": 12,
+                    "vmCount": 10,
                     "disks": [
                         {
                             "lun": 0,
@@ -647,7 +714,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('hNICName'))]"
             ],
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "tags": {
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
@@ -666,7 +733,7 @@
                             "publicKeys": "[variables('sshKeysArray')]"
                         }
                     },
-                    "customData": "IyEvYmluL2Jhc2gKCmZ1bmN0aW9uIGxvZygpCnsKICBtZXNzYWdlPSRACiAgZWNobyAiJG1lc3NhZ2UiCiAgZWNobyAiJG1lc3NhZ2UiID4+IC92YXIvbG9nL3NhcGNvbmZpZ2NyZWF0ZQp9CgpmdW5jdGlvbiBhZGR0b2ZzdGFiKCkKewogIGxvZyAiYWRkdG9mc3RhYiIKICBwYXJ0UGF0aD0kMQogIG1vdW50PSQyCiAgaWYgWyAiJG1vdW50IiA9IHRydWUgXSA7CiAgdGhlbgogICAgbG9jYWwgYmxraWQ9JCgvc2Jpbi9ibGtpZCAkcGFydFBhdGgpCiAgICAKICAgIGlmIFtbICRibGtpZCA9fiAgVVVJRD1cIiguezM2fSlcIiBdXQogICAgdGhlbgogICAgCiAgICAgIGxvZyAiQWRkaW5nIGZzdGFiIGVudHJ5IgogICAgICBsb2NhbCB1dWlkPSR7QkFTSF9SRU1BVENIWzFdfTsKICAgICAgbG9jYWwgbW91bnRDbWQ9IiIKICAgICAgbG9nICJhZGRpbmcgZnN0YWIgZW50cnkiCiAgICAgIG1vdW50Q21kPSIvZGV2L2Rpc2svYnktdXVpZC8kdXVpZCAkbW91bnRQYXRoIHhmcyAgZGVmYXVsdHMsbm9mYWlsICAwICAyIgogICAgICBlY2hvICIkbW91bnRDbWQiID4+IC9ldGMvZnN0YWIKICAgICAgJChtb3VudCAkbW91bnRQYXRoKQogICAgCiAgICBlbHNlCiAgICAgIGxvZyAibm8gVVVJRCBmb3VuZCIKICAgICAgZXhpdCAtMTsKICAgIGZpCiAgZWxzZQogICAgJChtb3VudCAkcGFydFBhdGggJG1vdW50UGF0aCkKICBmaQogIAogIGxvZyAiYWRkdG9mc3RhYiBkb25lIgp9CgpmdW5jdGlvbiBnZXRkZXZpY2VwYXRoKCkKewoKICBsb2cgImdldGRldmljZXBhdGgiCiAgZ2V0ZGV2aWNlcGF0aHJlc3VsdD0iIgogIGxvY2FsIGx1bj0kMQogIGxvY2FsIHJlYWRsaW5rT3V0cHV0PSQocmVhZGxpbmsgL2Rldi9kaXNrL2F6dXJlL3Njc2kxL2x1biRsdW4pCiAgbG9jYWwgc2NzaU91dHB1dD0kKGxzc2NzaSkKICBpZiBbWyAkcmVhZGxpbmtPdXRwdXQgPX4gKHNkW2EtekEtWl17MSwyfSkgXV07CiAgdGhlbgogICAgbG9nICJmb3VuZCBkZXZpY2UgcGF0aCB1c2luZyByZWFkbGluayIKICAgIGdldGRldmljZXBhdGhyZXN1bHQ9Ii9kZXYvJHtCQVNIX1JFTUFUQ0hbMV19IjsKICBlbGlmIFtbICRzY3NpT3V0cHV0ID1+IFxbNTowOjA6JGx1blxdW15cW10qKC9kZXYvc2RbYS16QS1aXXsxLDJ9KSBdXTsKICB0aGVuCiAgICBsb2cgImZvdW5kIGRldmljZSBwYXRoIHVzaW5nIGxzc2NzaSIKICAgIGdldGRldmljZXBhdGhyZXN1bHQ9JHtCQVNIX1JFTUFUQ0hbMV19OwogIGVsc2UKICAgIGxvZyAibHNzY3NpIG91dHB1dCBub3QgYXMgZXhwZWN0ZWQgZm9yICRsdW4iCiAgICBleGl0IC0xOwogIGZpCiAgbG9nICJnZXRkZXZpY2VwYXRoIGRvbmUiCgp9CgpmdW5jdGlvbiBjcmVhdGVsdm0oKQp7CiAgCiAgbG9nICJjcmVhdGVsdm0iCgogIGx1bnNBPSgkezEvLywvIH0pCiAgdmdOYW1lPSQyCiAgbHZOYW1lPSQzCiAgbW91bnRQYXRoPSQ0CiAgbW91bnQ9JDUKCiAgYXJyYXludW09JHsjbHVuc0FbQF19CiAgbG9nICJjb3VudCAkYXJyYXludW0iCiAgaWYgW1sgJGFycmF5bnVtIC1ndCAxIF1dCiAgdGhlbgogICAgbG9nICJjcmVhdGVsdm0gLSBjcmVhdGluZyBsdm0iCgogICAgbnVtUmFpZERldmljZXM9MAogICAgcmFpZERldmljZXM9IiIKICAgIG51bT0keyNsdW5zQVtAXX0KICAgIGxvZyAibnVtIGx1bnMgJG51bSIKICAgIAogICAgZm9yICgoaT0wOyBpPG51bTsgaSsrKSkKICAgIGRvCiAgICAgIGxvZyAidHJ5aW5nIHRvIGZpbmQgZGV2aWNlIHBhdGgiCiAgICAgIGx1bj0ke2x1bnNBWyRpXX0KICAgICAgZ2V0ZGV2aWNlcGF0aCAkbHVuCiAgICAgIGRldmljZVBhdGg9JGdldGRldmljZXBhdGhyZXN1bHQ7CiAgICAgIAogICAgICBpZiBbIC1uICIkZGV2aWNlUGF0aCIgXTsKICAgICAgdGhlbgogICAgICAgIGxvZyAiIERldmljZSBQYXRoIGlzICRkZXZpY2VQYXRoIgogICAgICAgIG51bVJhaWREZXZpY2VzPSQoKG51bVJhaWREZXZpY2VzICsgMSkpCiAgICAgICAgcmFpZERldmljZXM9IiRyYWlkRGV2aWNlcyAkZGV2aWNlUGF0aCAiCiAgICAgIGVsc2UKICAgICAgICBsb2cgIm5vIGRldmljZSBwYXRoIGZvciBMVU4gJGx1biIKICAgICAgICBleGl0IC0xOwogICAgICBmaQogICAgZG9uZQoKICAgIGxvZyAibnVtOiAkbnVtUmFpZERldmljZXMgcGF0aHM6ICckcmFpZERldmljZXMnIgogICAgJChwdmNyZWF0ZSAkcmFpZERldmljZXMpCiAgICAkKHZnY3JlYXRlICR2Z05hbWUgJHJhaWREZXZpY2VzKQogICAgJChsdmNyZWF0ZSAtLWV4dGVudHMgMTAwJUZSRUUgLS1zdHJpcGVzICRudW1SYWlkRGV2aWNlcyAtLW5hbWUgJGx2TmFtZSAkdmdOYW1lKQogICAgJChta2ZzIC10IHhmcyAvZGV2LyR2Z05hbWUvJGx2TmFtZSkKICAgICQobWtkaXIgLXAgJG1vdW50UGF0aCkKICAgIAogICAgYWRkdG9mc3RhYiAvZGV2LyR2Z05hbWUvJGx2TmFtZSAgbW91bnQKICBlbHNlCiAgICBsb2cgImNyZWF0ZWx2bSAtIGNyZWF0aW5nIHNpbmdsZSBkaXNrIgoKICAgIGx1bj0ke2x1bnNBWzBdfQogICAgZ2V0ZGV2aWNlcGF0aCAkbHVuOwogICAgZGV2aWNlUGF0aD0kZ2V0ZGV2aWNlcGF0aHJlc3VsdDsKICAgIGlmIFsgLW4gIiRkZXZpY2VQYXRoIiBdOwogICAgdGhlbgogICAgICBsb2cgIiBEZXZpY2UgUGF0aCBpcyAkZGV2aWNlUGF0aCIKICAgICAgIyBodHRwOi8vc3VwZXJ1c2VyLmNvbS9xdWVzdGlvbnMvMzMyMjUyL2NyZWF0aW5nLWFuZC1mb3JtYXRpbmctYS1wYXJ0aXRpb24tdXNpbmctYS1iYXNoLXNjcmlwdAogICAgICAkKGVjaG8gLWUgIm5cbnBcbjFcblxuXG53IiB8IGZkaXNrICRkZXZpY2VQYXRoKSA+IC9kZXYvbnVsbAogICAgICBwYXJ0UGF0aD0iJGRldmljZVBhdGgiIjEiCiAgICAgICQobWtmcyAtdCB4ZnMgJHBhcnRQYXRoKSA+IC9kZXYvbnVsbAogICAgICAkKG1rZGlyIC1wICRtb3VudFBhdGgpCgogICAgICBhZGR0b2ZzdGFiICRwYXJ0UGF0aCBtb3VudAogICAgZWxzZQogICAgICBsb2cgIm5vIGRldmljZSBwYXRoIGZvciBMVU4gJGx1biIKICAgICAgZXhpdCAtMTsKICAgIGZpCiAgZmkKCiAgbG9nICJjcmVhdGVsdm0gZG9uZSIKfQoKbG9nICRACgpsdW5zPSIiCm5hbWVzPSIiCnBhdGhzPSIiCgp3aGlsZSB0cnVlOyAKZG8KICBjYXNlICIkMSIgaW4KICAgICItbHVucyIpICBsdW5zPSQyO3NoaWZ0IDI7bG9nICJmb3VuZCBsdW5zIgogICAgOzsKICAgICItbmFtZXMiKSAgbmFtZXM9JDI7c2hpZnQgMjtsb2cgImZvdW5kIG5hbWVzIgogICAgOzsKICAgICItcGF0aHMiKSAgcGF0aHM9JDI7c2hpZnQgMjtsb2cgImZvdW5kIHBhdGhzIgogICAgOzsKICAgICopIGxvZyAidW5rbm93biBwYXJhbWV0ZXIgJDEiO3NoaWZ0IDE7CiAgICA7OwogIGVzYWMKCiAgaWYgW1sgLXogIiQxIiBdXTsKICB0aGVuIAogICAgYnJlYWs7IAogIGZpCmRvbmUKCmx1bnNTcGxpdD0oJHtsdW5zLy8jLyB9KQpuYW1lc1NwbGl0PSgke25hbWVzLy8jLyB9KQpwYXRoc1NwbGl0PSgke3BhdGhzLy8jLyB9KQoKbHVuc0NvdW50PSR7I2x1bnNTcGxpdFtAXX0KbmFtZXNDb3VudD0keyNuYW1lc1NwbGl0W0BdfQpwYXRoc0NvdW50PSR7I3BhdGhzU3BsaXRbQF19Cgpsb2cgImNvdW50ICRsdW5zQ291bnQgJG5hbWVzQ291bnQgJHBhdGhzQ291bnQiCgppZiBbWyAkbHVuc0NvdW50IC1lcSAkbmFtZXNDb3VudCAmJiAkbmFtZXNDb3VudCAtZXEgJHBhdGhzQ291bnQgXV0KdGhlbgogIGZvciAoKGlwYXJ0PTA7IGlwYXJ0PGx1bnNDb3VudDsgaXBhcnQrKykpCiAgZG8KICAgIGx1bj0ke2x1bnNTcGxpdFskaXBhcnRdfQogICAgbmFtZT0ke25hbWVzU3BsaXRbJGlwYXJ0XX0KICAgIHBhdGg9JHtwYXRoc1NwbGl0WyRpcGFydF19CgogICAgbG9nICJjcmVhdGluZyBkaXNrIHdpdGggJGx1biAkbmFtZSAkcGF0aCIKICAgIGNyZWF0ZWx2bSAkbHVuICJ2Zy0kbmFtZSIgImx2LSRuYW1lIiAiJHBhdGgiOwogIGRvbmUKZWxzZQogIGxvZyAiY291bnQgbm90IGVxdWFsIgpmaQoKZXhpdA=="
+                    "customData": "IyEvYmluL2Jhc2gKCmZ1bmN0aW9uIGxvZygpCnsKICBtZXNzYWdlPSRACiAgZWNobyAiJG1lc3NhZ2UiCiAgZWNobyAiJG1lc3NhZ2UiID4+IC92YXIvbG9nL3NhcGNvbmZpZ2NyZWF0ZQp9CgpmdW5jdGlvbiBhZGR0b2ZzdGFiKCkKewogIGxvZyAiYWRkdG9mc3RhYiIKICBwYXJ0UGF0aD0kMQogIG1vdW50PSQyCiAgaWYgWyAiJG1vdW50IiA9IHRydWUgXSA7CiAgdGhlbgogICAgbG9jYWwgYmxraWQ9JCgvc2Jpbi9ibGtpZCAkcGFydFBhdGgpCiAgICAKICAgIGlmIFtbICRibGtpZCA9fiAgVVVJRD1cIiguezM2fSlcIiBdXQogICAgdGhlbgogICAgCiAgICAgIGxvZyAiQWRkaW5nIGZzdGFiIGVudHJ5IgogICAgICBsb2NhbCB1dWlkPSR7QkFTSF9SRU1BVENIWzFdfTsKICAgICAgbG9jYWwgbW91bnRDbWQ9IiIKICAgICAgbG9nICJhZGRpbmcgZnN0YWIgZW50cnkiCiAgICAgIG1vdW50Q21kPSIvZGV2L2Rpc2svYnktdXVpZC8kdXVpZCAkbW91bnQgeGZzICBkZWZhdWx0cyxub2ZhaWwgIDAgIDIiCiAgICAgIGVjaG8gIiRtb3VudENtZCIgPj4gL2V0Yy9mc3RhYgogICAgICAkKG1vdW50ICRtb3VudCkKICAgIAogICAgZWxzZQogICAgICBsb2cgIm5vIFVVSUQgZm91bmQiCiAgICAgIGV4aXQgLTE7CiAgICBmaQogIGVsc2UKICAgICQobW91bnQgJHBhcnRQYXRoICRtb3VudCkKICBmaQogIAogIGxvZyAiYWRkdG9mc3RhYiBkb25lIgp9CgpmdW5jdGlvbiBnZXRkZXZpY2VwYXRoKCkKewoKICBsb2cgImdldGRldmljZXBhdGgiCiAgZ2V0ZGV2aWNlcGF0aHJlc3VsdD0iIgogIGxvY2FsIGx1bj0kMQogIGxvY2FsIHJlYWRsaW5rT3V0cHV0PSQocmVhZGxpbmsgL2Rldi9kaXNrL2F6dXJlL3Njc2kxL2x1biRsdW4pCiAgbG9jYWwgc2NzaU91dHB1dD0kKGxzc2NzaSkKICBpZiBbWyAkcmVhZGxpbmtPdXRwdXQgPX4gKHNkW2EtekEtWl17MSwyfSkgXV07CiAgdGhlbgogICAgbG9nICJmb3VuZCBkZXZpY2UgcGF0aCB1c2luZyByZWFkbGluayIKICAgIGdldGRldmljZXBhdGhyZXN1bHQ9Ii9kZXYvJHtCQVNIX1JFTUFUQ0hbMV19IjsKICBlbGlmIFtbICRzY3NpT3V0cHV0ID1+IFxbNTowOjA6JGx1blxdW15cW10qKC9kZXYvc2RbYS16QS1aXXsxLDJ9KSBdXTsKICB0aGVuCiAgICBsb2cgImZvdW5kIGRldmljZSBwYXRoIHVzaW5nIGxzc2NzaSIKICAgIGdldGRldmljZXBhdGhyZXN1bHQ9JHtCQVNIX1JFTUFUQ0hbMV19OwogIGVsc2UKICAgIGxvZyAibHNzY3NpIG91dHB1dCBub3QgYXMgZXhwZWN0ZWQgZm9yICRsdW4iCiAgICBleGl0IC0xOwogIGZpCiAgbG9nICJnZXRkZXZpY2VwYXRoIGRvbmUiCgp9CgpmdW5jdGlvbiBjcmVhdGVsdm0oKQp7CiAgCiAgbG9nICJjcmVhdGVsdm0iCgogIGxvY2FsIGx1bnNBPSgkezEvLywvIH0pCiAgbG9jYWwgdmdOYW1lPSQyCiAgbG9jYWwgbHZOYW1lPSQzCiAgbG9jYWwgbW91bnRQYXRoQT0oJHs0Ly8sLyB9KQogIGxvY2FsIHNpemVBPSgkezUvLywvIH0pCgogIGxvY2FsIGx1bnNDb3VudD0keyNsdW5zQVtAXX0KICBsb2NhbCBtb3VudFBhdGhDb3VudD0keyNtb3VudFBhdGhBW0BdfQogIGxvY2FsIHNpemVDb3VudD0keyNzaXplQVtAXX0KICBsb2cgImNvdW50ICRsdW5zQ291bnQgJG1vdW50UGF0aENvdW50ICRzaXplQ291bnQiCiAgaWYgW1sgJGx1bnNDb3VudCAtZ3QgMSBdXQogIHRoZW4KICAgIGxvZyAiY3JlYXRlbHZtIC0gY3JlYXRpbmcgbHZtIgoKICAgIGxvY2FsIG51bVJhaWREZXZpY2VzPTAKICAgIGxvY2FsIHJhaWREZXZpY2VzPSIiCiAgICBsb2cgIm51bSBsdW5zICRsdW5zQ291bnQiCiAgICAKICAgIGZvciAoKGk9MDsgaTxsdW5zQ291bnQ7IGkrKykpCiAgICBkbwogICAgICBsb2cgInRyeWluZyB0byBmaW5kIGRldmljZSBwYXRoIgogICAgICBsb2NhbCBsdW49JHtsdW5zQVskaV19CiAgICAgIGdldGRldmljZXBhdGggJGx1bgogICAgICBsb2NhbCBkZXZpY2VQYXRoPSRnZXRkZXZpY2VwYXRocmVzdWx0OwogICAgICAKICAgICAgaWYgWyAtbiAiJGRldmljZVBhdGgiIF07CiAgICAgIHRoZW4KICAgICAgICBsb2cgIiBEZXZpY2UgUGF0aCBpcyAkZGV2aWNlUGF0aCIKICAgICAgICBudW1SYWlkRGV2aWNlcz0kKChudW1SYWlkRGV2aWNlcyArIDEpKQogICAgICAgIHJhaWREZXZpY2VzPSIkcmFpZERldmljZXMgJGRldmljZVBhdGggIgogICAgICBlbHNlCiAgICAgICAgbG9nICJubyBkZXZpY2UgcGF0aCBmb3IgTFVOICRsdW4iCiAgICAgICAgZXhpdCAtMTsKICAgICAgZmkKICAgIGRvbmUKCiAgICBsb2cgIm51bTogJG51bVJhaWREZXZpY2VzIHBhdGhzOiAnJHJhaWREZXZpY2VzJyIKICAgICQocHZjcmVhdGUgJHJhaWREZXZpY2VzKQogICAgJCh2Z2NyZWF0ZSAkdmdOYW1lICRyYWlkRGV2aWNlcykKCiAgICBmb3IgKChqPTA7IGo8bW91bnRQYXRoQ291bnQ7IGorKykpCiAgICBkbwogICAgICBsb2NhbCBtb3VudFBhdGhMb2M9JHttb3VudFBhdGhBWyRqXX0KICAgICAgbG9jYWwgc2l6ZUxvYz0ke3NpemVBWyRqXX0KICAgICAgbG9jYWwgbHZOYW1lTG9jPSIkbHZOYW1lLSRqIgogICAgICAkKGx2Y3JlYXRlIC0tZXh0ZW50cyAkc2l6ZUxvYyVGUkVFIC0tc3RyaXBlcyAkbnVtUmFpZERldmljZXMgLS1uYW1lICRsdk5hbWVMb2MgJHZnTmFtZSkKICAgICAgJChta2ZzIC10IHhmcyAvZGV2LyR2Z05hbWUvJGx2TmFtZUxvYykKICAgICAgJChta2RpciAtcCAkbW91bnRQYXRoTG9jKQogICAgCiAgICAgIGFkZHRvZnN0YWIgL2Rldi8kdmdOYW1lLyRsdk5hbWVMb2MgJG1vdW50UGF0aExvYwogICAgZG9uZQoKICBlbHNlCiAgICBsb2cgImNyZWF0ZWx2bSAtIGNyZWF0aW5nIHNpbmdsZSBkaXNrIgoKICAgIGxvY2FsIGx1bj0ke2x1bnNBWzBdfQogICAgbG9jYWwgbW91bnRQYXRoTG9jPSR7bW91bnRQYXRoQVswXX0KICAgIGdldGRldmljZXBhdGggJGx1bjsKICAgIGxvY2FsIGRldmljZVBhdGg9JGdldGRldmljZXBhdGhyZXN1bHQ7CiAgICBpZiBbIC1uICIkZGV2aWNlUGF0aCIgXTsKICAgIHRoZW4KICAgICAgbG9nICIgRGV2aWNlIFBhdGggaXMgJGRldmljZVBhdGgiCiAgICAgICMgaHR0cDovL3N1cGVydXNlci5jb20vcXVlc3Rpb25zLzMzMjI1Mi9jcmVhdGluZy1hbmQtZm9ybWF0aW5nLWEtcGFydGl0aW9uLXVzaW5nLWEtYmFzaC1zY3JpcHQKICAgICAgJChlY2hvIC1lICJuXG5wXG4xXG5cblxudyIgfCBmZGlzayAkZGV2aWNlUGF0aCkgPiAvZGV2L251bGwKICAgICAgbG9jYWwgcGFydFBhdGg9IiRkZXZpY2VQYXRoIiIxIgogICAgICAkKG1rZnMgLXQgeGZzICRwYXJ0UGF0aCkgPiAvZGV2L251bGwKICAgICAgJChta2RpciAtcCAkbW91bnRQYXRoTG9jKQoKICAgICAgYWRkdG9mc3RhYiAkcGFydFBhdGggJG1vdW50UGF0aExvYwogICAgZWxzZQogICAgICBsb2cgIm5vIGRldmljZSBwYXRoIGZvciBMVU4gJGx1biIKICAgICAgZXhpdCAtMTsKICAgIGZpCiAgZmkKCiAgbG9nICJjcmVhdGVsdm0gZG9uZSIKfQoKbG9nICRACgpsdW5zPSIiCm5hbWVzPSIiCnBhdGhzPSIiCnNpemVzPSIiCgp3aGlsZSB0cnVlOyAKZG8KICBjYXNlICIkMSIgaW4KICAgICItbHVucyIpICBsdW5zPSQyO3NoaWZ0IDI7bG9nICJmb3VuZCBsdW5zIgogICAgOzsKICAgICItbmFtZXMiKSAgbmFtZXM9JDI7c2hpZnQgMjtsb2cgImZvdW5kIG5hbWVzIgogICAgOzsKICAgICItcGF0aHMiKSAgcGF0aHM9JDI7c2hpZnQgMjtsb2cgImZvdW5kIHBhdGhzIgogICAgOzsKICAgICItc2l6ZXMiKSAgc2l6ZXM9JDI7c2hpZnQgMjtsb2cgImZvdW5kIHNpemVzIgogICAgOzsKICAgICopIGxvZyAidW5rbm93biBwYXJhbWV0ZXIgJDEiO3NoaWZ0IDE7CiAgICA7OwogIGVzYWMKCiAgaWYgW1sgLXogIiQxIiBdXTsKICB0aGVuIAogICAgYnJlYWs7IAogIGZpCmRvbmUKCmx1bnNTcGxpdD0oJHtsdW5zLy8jLyB9KQpuYW1lc1NwbGl0PSgke25hbWVzLy8jLyB9KQpwYXRoc1NwbGl0PSgke3BhdGhzLy8jLyB9KQpzaXplc1NwbGl0PSgke3NpemVzLy8jLyB9KQoKbHVuc0NvdW50PSR7I2x1bnNTcGxpdFtAXX0KbmFtZXNDb3VudD0keyNuYW1lc1NwbGl0W0BdfQpwYXRoc0NvdW50PSR7I3BhdGhzU3BsaXRbQF19CnNpemVzQ291bnQ9JHsjc2l6ZXNTcGxpdFtAXX0KCmxvZyAiY291bnQgJGx1bnNDb3VudCAkbmFtZXNDb3VudCAkcGF0aHNDb3VudCAkc2l6ZXNDb3VudCIKCmlmIFtbICRsdW5zQ291bnQgLWVxICRuYW1lc0NvdW50ICYmICRuYW1lc0NvdW50IC1lcSAkcGF0aHNDb3VudCAmJiAkcGF0aHNDb3VudCAtZXEgJHNpemVzQ291bnQgXV0KdGhlbgogIGZvciAoKGlwYXJ0PTA7IGlwYXJ0PGx1bnNDb3VudDsgaXBhcnQrKykpCiAgZG8KICAgIGx1bj0ke2x1bnNTcGxpdFskaXBhcnRdfQogICAgbmFtZT0ke25hbWVzU3BsaXRbJGlwYXJ0XX0KICAgIHBhdGg9JHtwYXRoc1NwbGl0WyRpcGFydF19CiAgICBzaXplPSR7c2l6ZXNTcGxpdFskaXBhcnRdfQoKICAgIGxvZyAiY3JlYXRpbmcgZGlzayB3aXRoICRsdW4gJG5hbWUgJHBhdGggJHNpemUiCiAgICBjcmVhdGVsdm0gJGx1biAidmctJG5hbWUiICJsdi0kbmFtZSIgIiRwYXRoIiAiJHNpemUiOwogIGRvbmUKZWxzZQogIGxvZyAiY291bnQgbm90IGVxdWFsIgpmaQoKZXhpdA=="
                 },
                 "storageProfile": {
                     "imageReference": {
