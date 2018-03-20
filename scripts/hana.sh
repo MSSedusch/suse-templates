@@ -12,27 +12,23 @@ function addtofstab()
   log "addtofstab"
   partPath=$1
   mount=$2
-  if [ "$mount" = true ] ;
+  
+  local blkid=$(/sbin/blkid $partPath)
+  
+  if [[ $blkid =~  UUID=\"(.{36})\" ]]
   then
-    local blkid=$(/sbin/blkid $partPath)
-    
-    if [[ $blkid =~  UUID=\"(.{36})\" ]]
-    then
-    
-      log "Adding fstab entry"
-      local uuid=${BASH_REMATCH[1]};
-      local mountCmd=""
-      log "adding fstab entry"
-      mountCmd="/dev/disk/by-uuid/$uuid $mount xfs  defaults,nofail  0  2"
-      echo "$mountCmd" >> /etc/fstab
-      $(mount $mount)
-    
-    else
-      log "no UUID found"
-      exit -1;
-    fi
+  
+    log "Adding fstab entry"
+    local uuid=${BASH_REMATCH[1]};
+    local mountCmd=""
+    log "adding fstab entry"
+    mountCmd="/dev/disk/by-uuid/$uuid $mount xfs  defaults,nofail  0  2"
+    echo "$mountCmd" >> /etc/fstab
+    $(mount $mount)
+  
   else
-    $(mount $partPath $mount)
+    log "no UUID found"
+    exit -1;
   fi
   
   log "addtofstab done"
