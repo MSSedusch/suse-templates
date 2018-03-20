@@ -24,7 +24,7 @@ function addtofstab()
     log "adding fstab entry"
     mountCmd="/dev/disk/by-uuid/$uuid $mount xfs  defaults,nofail  0  2"
     echo "$mountCmd" >> /etc/fstab
-    $(mount $mount)
+    $(mount $partPath $mount)
   
   else
     log "no UUID found"
