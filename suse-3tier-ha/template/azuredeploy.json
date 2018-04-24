@@ -46,7 +46,6 @@
         },
         "adminUsername": {
             "type": "string",
-            "defaultValue": "sapadmin",
             "metadata": {
                 "description": "Username for the Virtual Machine."
             }
@@ -67,7 +66,7 @@
             "defaultValue": true
         },
         "vnetResourceGroup": {
-            "defaultValue": "",
+            "defaultValue": "[resourceGroup().name]",
             "type": "string"
         },
         "addressPrefix": {
@@ -196,15 +195,7 @@
         "sshKeysArrayEmpty": [
         ],
         "sshKeysArray": "[if(equals(length(parameters('sshKeyData')), 0), variables('sshKeysArrayEmpty'), variables('sshKeysArrayKey'))]",
-        "subnetConfigs": {
-            "true": {
-                "subnet": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
-            },
-            "false": {
-                "subnet": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
-            }
-        },
-        "internalSubnetId": "[variables('subnetConfigs')[string(parameters('createVNET'))].subnet]",
+        "internalSubnetId": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
         "lbrulePrefix": "lb-",
         "images": {
             "SLES for SAP 12 SP3 (Premium)": {
@@ -996,47 +987,13 @@
         "nfsProbePort": "probe",
         "nfsProbePortInternal": 61000,
         "nfsOSDiskCaching": "ReadWrite",
-        "nfsOSDiskStorageType": "Premium_LRS",
-        "nfsScriptArguments": " -luns -node -lbip -lbname -ipnode0 -ipnode1",
-        "faultDomainsPerRegion": {
-            "eastus": 3,
-            "eastus2": 3,
-            "westus": 3,
-            "westus2": 2,
-            "centralus": 3,
-            "northcentralus": 3,
-            "southcentralus": 3,
-            "westcentralus": 2,
-            "canadacentral": 2,
-            "canadaeast": 2,
-            "northeurope": 3,
-            "westeurope": 3,
-            "uksouth": 2,
-            "ukwest": 2,
-            "eastasia": 2,
-            "southeastasia": 2,
-            "japaneast": 2,
-            "japanwest": 2,
-            "southindia": 2,
-            "centralindia": 2,
-            "westindia": 2,
-            "koreacentral": 2,
-            "koreasouth": 2,
-            "australiaeast": 2,
-            "australiasoutheast": 2,
-            "brazilsouth": 2,
-            "usgovvirginia": 2,
-            "usgovtexas": 2,
-            "usgovarizona": 2,
-            "usdodcentral": 2,
-            "usdodeast": 2
-          }
+        "nfsOSDiskStorageType": "Premium_LRS"
     },
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[concat(parameters('nsgName'))]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "condition": "[parameters('createVNET')]",
             "tags": {
@@ -1064,7 +1021,7 @@
         {
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vnetName')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
@@ -1104,14 +1061,14 @@
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
             "properties": {
-                "platformFaultDomainCount": "[variables('faultDomainsPerRegion')[parameters('location')]]",
+                "platformFaultDomainCount": 2,
                 "platformUpdateDomainCount": 20
             }
         },
         {
             "type": "Microsoft.Network/loadBalancers",
             "name": "[parameters('nfsLoadBalancerName')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
@@ -1296,7 +1253,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('nfsVMName'), '-0', '/', 'CustomScript')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "nfsVMLoop"
@@ -1317,7 +1274,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('nfsVMName'), '-1', '/', 'CustomScript')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "nfsVMLoop",
@@ -1348,14 +1305,14 @@
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
             "properties": {
-                "platformFaultDomainCount": "[variables('faultDomainsPerRegion')[parameters('location')]]",
+                "platformFaultDomainCount": 2,
                 "platformUpdateDomainCount": 20
             }
         },
         {
             "type": "Microsoft.Network/loadBalancers",
             "name": "[parameters('xscsLoadBalancerName')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
@@ -1418,7 +1375,7 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[concat(parameters('xscsPIPName'), '-', copyIndex())]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
@@ -1540,7 +1497,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('xscsVMName'), '-', copyIndex(), '/', 'CustomScript')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-12-01",
             "copy": {
                 "name": "xscsCSELoop",
                 "count": "[variables('xscsvmCount')]"
@@ -1575,14 +1532,14 @@
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
             "properties": {
-                "platformFaultDomainCount": "[variables('faultDomainsPerRegion')[parameters('location')]]",
+                "platformFaultDomainCount": 2,
                 "platformUpdateDomainCount": 20
             }
         },
         {
             "type": "Microsoft.Network/loadBalancers",
             "name": "[parameters('hLoadBalancerName')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
@@ -1761,7 +1718,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('hVMName'), '-', copyIndex(), '/', 'CustomScript')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-12-01",
             "copy": {
                 "name": "hCSELoop",
                 "count": "[variables('hvmCount')]"
@@ -1796,7 +1753,7 @@
                 "provider": "[toUpper(parameters('_SUSETags').provider)]"
             },
             "properties": {
-                "platformFaultDomainCount": "[variables('faultDomainsPerRegion')[parameters('location')]]",
+                "platformFaultDomainCount": 2,
                 "platformUpdateDomainCount": 20
             }
         },
@@ -1894,7 +1851,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('appVMName'), '-', copyIndex(), '/', 'CustomScript')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-12-01",
             "copy": {
                 "name": "appCSELoop",
                 "count": "[variables('appvmCount')]"

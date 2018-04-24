@@ -34,7 +34,6 @@
         },
         "adminUsername": {
             "type": "string",
-            "defaultValue": "sapadmin",
             "metadata": {
                 "description": "Username for the Virtual Machine."
             }
@@ -55,7 +54,7 @@
             "defaultValue": true
         },
         "vnetResourceGroup": {
-            "defaultValue": "",
+            "defaultValue": "[resourceGroup().name]",
             "type": "string"
         },        
         "addressPrefix": {
@@ -108,15 +107,7 @@
         "sshKeysArrayEmpty": [
         ],
         "sshKeysArray": "[if(equals(length(parameters('sshKeyData')), 0), variables('sshKeysArrayEmpty'), variables('sshKeysArrayKey'))]",
-        "subnetConfigs": {
-            "true": {
-                "subnet": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
-            },
-            "false": {
-                "subnet": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
-            }
-        },
-        "internalSubnetId": "[variables('subnetConfigs')[string(parameters('createVNET'))].subnet]",
+        "internalSubnetId": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
         "images": {
             "SLES for SAP 12 SP3 (Premium)": {
                 "sku": "12-SP3",
@@ -383,7 +374,7 @@
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[concat(parameters('nsgName'))]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "condition": "[parameters('createVNET')]",
             "tags": {
@@ -411,7 +402,7 @@
         {
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vnetName')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
@@ -442,7 +433,7 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[parameters('hPIPName')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2018-04-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
             ],
@@ -539,7 +530,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('hVMName'), '/', 'CustomScript')]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('hVMName'))]"
